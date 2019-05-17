@@ -1,5 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 
+require('electron-reload')(__dirname);
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: Electron.BrowserWindow | null = null;
