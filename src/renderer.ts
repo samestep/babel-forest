@@ -4,6 +4,8 @@ import * as MatterJS from 'matter-js';
 // @ts-ignore: Property 'Matter' does not exist on type 'typeof Matter'.
 const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
+import { makeOctopus } from './octopus';
+
 const config = {
   backgroundColor: '#00ffff',
   physics: {
@@ -39,31 +41,6 @@ function preload() {
   scene = this;
 }
 
-function makeOctopus(config) {
-  const {
-    x,
-    y,
-    headSize,
-    numArms,
-    segmentLength,
-    segmentWidth,
-    segmentsPerArm,
-  } = config;
-
-  const group = Matter.Body.nextGroup(true);
-  const options = {
-    collisionFilter: {
-      group,
-      mask: ~0,
-      category: 1,
-    },
-  };
-  const head = Matter.Bodies.circle(x, y, headSize, options);
-  scene.matter.world.add(head);
-
-  // TODO: make the rest of the octopus
-}
-
 function create() {
   scene.matter.add.mouseSpring({ });
   scene.matter.world.setBounds(50, 50, 700, 500);
@@ -72,12 +49,12 @@ function create() {
 
   makeOctopus({
     x: 300, y: 400,
-    headSize: 20,
+    headRadius: 20,
     numArms: 8,
-    segmentLength: 10,
-    segmentWidth: 5,
+    segmentLength: 30,
+    segmentRadius: 5,
     segmentsPerArm: 5,
-  });
+  }).forEach(thing => scene.matter.world.add(thing));
 }
 
 function update() { }
