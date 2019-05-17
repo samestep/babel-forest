@@ -5,7 +5,7 @@ import * as MatterJS from 'matter-js';
 const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
 const config = {
-  backgroundColor: '#ffffff',
+  backgroundColor: '#00ffff',
   physics: {
     default: 'matter',
     matter: {
