@@ -4,7 +4,7 @@ import * as MatterJS from 'matter-js';
 // @ts-ignore: Property 'Matter' does not exist on type 'typeof Matter'.
 const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
-import { makeOctopus } from './octopus';
+import { Octopus } from './octopus';
 
 const config = {
   backgroundColor: '#00ffff',
@@ -47,14 +47,15 @@ function create() {
 
   scene.matter.add.rectangle(500, 300, 100, 50, { isStatic: true });
 
-  makeOctopus({
+  const octopus = new Octopus({
     x: 300, y: 400,
     headRadius: 20,
     numArms: 8,
     segmentLength: 30,
     segmentRadius: 5,
     segmentsPerArm: 5,
-  }).forEach(thing => scene.matter.world.add(thing));
+  });
+  scene.matter.world.add(octopus.comp);
 }
 
 function update() { }
