@@ -1,0 +1,15 @@
+{
+  "name": "babel-forest",
+  "version": "0.1.0",
+  "description": "A Book Jam game.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samestep/babel-forest.git"
+  },
+  "author": "Sam Estep",
+  "license": "The Unlicense",
+  "bugs": {
+    "url": "https://github.com/samestep/babel-forest/issues"
+  },
+  "homepage": "https://github.com/samestep/babel-forest#readme"
+}
