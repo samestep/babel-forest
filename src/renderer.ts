@@ -5,8 +5,6 @@ import * as MatterJS from 'matter-js';
 const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
 const config = {
-  width: window.innerWidth,
-  height: window.innerHeight,
   backgroundColor: '#ffffff',
   physics: {
     default: 'matter',
@@ -18,6 +16,10 @@ const config = {
     preload: preload,
     create: create,
     update: update
+  },
+  scale: {
+    parent: 'parent',
+    mode: Phaser.Scale.RESIZE
   }
 };
 
@@ -30,7 +32,6 @@ let scene: Phaser.Scene;
 window.addEventListener('resize', () => {
   const width = window.innerWidth;
   const height = window.innerHeight;
-  game.resize(width, height);
   scene.cameras.main.setSize(width, height);
 });
 
