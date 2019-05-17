@@ -4,5 +4,22 @@
   "description": "A Book Jam game.",
   "repository": "https://github.com/samestep/babel-forest.git",
   "author": "Sam Estep",
-  "license": "Unlicense"
+  "license": "Unlicense",
+  "main": "src/main.ts",
+  "scripts": {
+    "start": "electron-forge start"
+  },
+  "config": {
+    "forge": {}
+  },
+  "devDependencies": {
+    "@types/matter-js": "^0.10.2",
+    "electron-compile": "^6.4.4",
+    "electron-forge": "^5.2.4",
+    "electron-prebuilt-compile": "4.0.0",
+    "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "phaser": "^3.17.0"
+  }
 }
