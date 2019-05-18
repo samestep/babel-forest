@@ -104,7 +104,9 @@ export class Octopus {
   }
 }
 
-export function maybeReachable(bodies: Matter.Body[], octopus: Octopus) {
+export function maybeReachable(
+  bodies: Matter.Body[], octopus: Octopus
+): Matter.Body[] {
   const center = octopus.head.position;
   const reachBody = Matter.Bodies.circle(center.x, center.y, octopus.reach);
   return Matter.Query.region(bodies, reachBody.bounds);
