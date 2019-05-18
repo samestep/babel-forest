@@ -21,7 +21,7 @@ const config = {
   scene: {
     preload: preload,
     create: create,
-    update: render,
+    update: update,
   },
   scale: {
     parent: 'parent',
@@ -77,7 +77,7 @@ function create() {
   scene.input.on('pointerdown', () => { clicked = true; });
 }
 
-function render() {
+function update() {
   graphics.clear();
 
   const pointer = scene.input.activePointer;
