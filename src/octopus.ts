@@ -122,8 +122,9 @@ class Arm {
     graphics.lineStyle(this.segmentRadius * 2, 0xffa500);
     spline.draw(graphics);
 
-    const { x, y } = this.tipPosition();
-    graphics.fillCircle(x, y, this.segmentRadius);
+    vectors.forEach(({ x, y }) => {
+      graphics.fillCircle(x, y, this.segmentRadius);
+    })
   }
 }
 
