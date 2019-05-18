@@ -9,7 +9,6 @@ import * as _ from 'underscore';
 import { Octopus } from './octopus';
 
 const config = {
-  backgroundColor: '#00ffff',
   physics: {
     default: 'matter',
   },
@@ -40,15 +39,20 @@ function preload() {
   scene = this;
 }
 
+const bounds = { x: 50, y: 50, width: 700, height: 500};
+const block = { x: 500, y: 300, width: 100, height: 50};
+
 let graphics: Phaser.GameObjects.Graphics;
 let octopus: Octopus;
 
 function create() {
   graphics = scene.add.graphics();
 
-  scene.matter.world.setBounds(50, 50, 700, 500);
+  scene.matter.world.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 
-  const rect = Matter.Bodies.rectangle(500, 300, 100, 50, { isStatic: true });
+  const rect = Matter.Bodies.rectangle(
+    block.x, block.y, block.width, block.height, { isStatic: true }
+  );
   scene.matter.world.add(rect);
 
   octopus = new Octopus({
@@ -73,5 +77,9 @@ function update(time: number, delta: number) {
   octopus.update(time, delta, scene.matter.world.localWorld);
 
   graphics.clear();
+  graphics.fillStyle(0x202020);
+  graphics.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+  graphics.fillStyle(0x000000);
+  graphics.fillRect(block.x, block.y, block.width, block.height);
   octopus.render(graphics);
 }
