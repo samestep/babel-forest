@@ -80,11 +80,14 @@ class Arm {
     });
   }
 
-  tipPosition(): Matter.Vector {
-    const i = this.segments.length - 1;
-    const direction = i % 2 == 0 ? 1 : -1;
+  segmentTip(index: number): Matter.Vector {
+    const direction = index % 2 == 0 ? 1 : -1;
     const offset = direction * (this.segmentLength / 2.0 - this.segmentRadius);
-    return bodyToWorld(this.segments[i], { x: offset, y: 0 });
+    return bodyToWorld(this.segments[index], { x: offset, y: 0 });
+  }
+
+  tipPosition(): Matter.Vector {
+    return this.segmentTip(this.segments.length - 1);
   }
 
   stop() {
@@ -107,15 +110,18 @@ class Arm {
     }
   }
 
-  render(graphics: Phaser.GameObjects.Graphics) {
-    const points = this.segments.map(segment => {
-      const { x, y } = segment.position;
+  render(graphics: Phaser.GameObjects.Graphics, center: Matter.Vector) {
+    const vectors = this.segments.map((s, i) => this.segmentTip(i));
+    const points = [center, ...vectors].map(({ x, y }) => {
       return new Phaser.Math.Vector2(x, y);
     });
     const spline = new Phaser.Curves.Spline(points);
 
     graphics.lineStyle(this.segmentRadius * 2, 0xffa500);
     spline.draw(graphics);
+
+    const { x, y } = this.tipPosition();
+    graphics.fillCircle(x, y, this.segmentRadius);
   }
 }
 
@@ -272,6 +278,6 @@ export class Octopus {
   render(graphics: Phaser.GameObjects.Graphics) {
     graphics.fillStyle(0xffa500);
     graphics.fillCircle(this.head.position.x, this.head.position.y, this.headRadius);
-    this.arms.forEach(arm => arm.render(graphics));
+    this.arms.forEach(arm => arm.render(graphics, this.head.position));
   }
 }
