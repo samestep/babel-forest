@@ -6,7 +6,7 @@ const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
 import * as _ from 'underscore';
 
-import { Octopus, maybeReachable } from './octopus';
+import { Octopus } from './octopus';
 import * as random from './random';
 import { raycast } from './raycast';
 
@@ -114,7 +114,7 @@ function render() {
 
     // @ts-ignore: Argument of type 'World' is not assignable ...
     const bodies = Matter.Composite.allBodies(scene.matter.world.localWorld);
-    const reachable = maybeReachable(bodies, octopus);
+    const reachable = octopus.maybeReachable(bodies);
     const ray = Matter.Query.ray(reachable, start, end2);
     const cast = raycast(ray.map(obj => obj.body), start, end2);
     const points = cast.map(raycol => raycol.point);

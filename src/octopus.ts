@@ -102,18 +102,16 @@ export class Octopus {
     // @ts-ignore: Argument of type 'Constraint[]' is not assignable ...
     Matter.Composite.add(this.comp, constraints);
   }
-}
 
-export function maybeReachable(
-  bodies: Matter.Body[], octopus: Octopus
-): Matter.Body[] {
-  const octobodies = new Set(Matter.Composite.allBodies(octopus.comp));
-  // haha see what I did there?
+  maybeReachable(bodies: Matter.Body[]): Matter.Body[] {
+    const octobodies = new Set(Matter.Composite.allBodies(this.comp));
+    // haha see what I did there?
 
-  const relevantBodies = bodies.filter(b => !octobodies.has(b));
+    const relevantBodies = bodies.filter(b => !octobodies.has(b));
 
-  const center = octopus.head.position;
-  const reachBody = Matter.Bodies.circle(center.x, center.y, octopus.reach);
+    const center = this.head.position;
+    const reachBody = Matter.Bodies.circle(center.x, center.y, this.reach);
 
-  return Matter.Query.region(relevantBodies, reachBody.bounds);
+    return Matter.Query.region(relevantBodies, reachBody.bounds);
+  }
 }
