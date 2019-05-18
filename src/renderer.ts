@@ -12,7 +12,6 @@ const config = {
   backgroundColor: '#00ffff',
   physics: {
     default: 'matter',
-    matter: { debug: true },
   },
   scene: {
     preload: preload,
@@ -41,9 +40,12 @@ function preload() {
   scene = this;
 }
 
+let graphics: Phaser.GameObjects.Graphics;
 let octopus: Octopus;
 
 function create() {
+  graphics = scene.add.graphics();
+
   scene.matter.world.setBounds(50, 50, 700, 500);
 
   const rect = Matter.Bodies.rectangle(500, 300, 100, 50, { isStatic: true });
@@ -69,4 +71,7 @@ function update(time: number, delta: number) {
   }
   // @ts-ignore: Argument of type 'MatterJS.World' is not assignable ...
   octopus.update(time, delta, scene.matter.world.localWorld);
+
+  graphics.clear();
+  octopus.render(graphics);
 }

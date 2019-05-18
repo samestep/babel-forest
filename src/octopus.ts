@@ -12,6 +12,7 @@ function adjacents<T>(array: T[]): [T, T][] {
 }
 
 class Arm {
+  segmentRadius: number;
   comp: Matter.Composite;
   segments: Matter.Body[];
   hook: Matter.Body;
@@ -27,6 +28,8 @@ class Arm {
       segmentRadius,
       collisionFilter,
     } = config;
+
+    this.segmentRadius = segmentRadius;
 
     this.segments = _.times(numSegments, () => Matter.Bodies.rectangle(
       x, y, segmentLength, segmentRadius*2,
@@ -92,9 +95,21 @@ class Arm {
       this.stop();
     }
   }
+
+  render(graphics: Phaser.GameObjects.Graphics) {
+    const points = this.segments.map(segment => {
+      const { x, y } = segment.position;
+      return new Phaser.Math.Vector2(x, y);
+    });
+    const spline = new Phaser.Curves.Spline(points);
+
+    graphics.lineStyle(this.segmentRadius * 2, 0xffa500);
+    spline.draw(graphics);
+  }
 }
 
 export class Octopus {
+  headRadius: number;
   reach: number;
   comp: Matter.Composite;
   head: Matter.Body;
@@ -117,6 +132,7 @@ export class Octopus {
       segmentsPerArm,
     } = config;
 
+    this.headRadius = headRadius;
     this.reach = (segmentLength - 2 * segmentRadius) * segmentsPerArm;
 
     const group = Matter.Body.nextGroup(true);
@@ -241,5 +257,11 @@ export class Octopus {
     }
 
     this.arms.forEach(arm => arm.update(this.head.position, this.reach));
+  }
+
+  render(graphics: Phaser.GameObjects.Graphics) {
+    graphics.fillStyle(0xffa500);
+    graphics.fillCircle(this.head.position.x, this.head.position.y, this.headRadius);
+    this.arms.forEach(arm => arm.render(graphics));
   }
 }
