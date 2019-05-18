@@ -236,7 +236,7 @@ export class Octopus {
         }, points[0]);
         bestArm.move(point);
       } else {
-        bestArm.stop();
+        this.arms.forEach(arm => arm.stop());
       }
     }
 
