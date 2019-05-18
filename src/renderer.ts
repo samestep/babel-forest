@@ -5,6 +5,7 @@ import * as MatterJS from 'matter-js';
 const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
 import { Octopus, maybeReachable } from './octopus';
+import * as random from './random';
 import { raycast } from './raycast';
 
 const config = {
@@ -88,16 +89,21 @@ function render() {
   const x2 = pointer.worldX;
   const y2 = pointer.worldY;
 
-  graphics.strokeLineShape(new Phaser.Geom.Line(x1, y1, x2, y2));
-
   const start = { x: x1, y: y1 };
   const end = { x: x2, y: y2 };
+
+  const v1 = Matter.Vector.sub(end, start);
+  const angle = random.weighted(-Math.PI/2, Math.PI/2);
+  const v2 = Matter.Vector.rotate(v1, angle);
+  const end2 = Matter.Vector.add(start, v2);
+
+  graphics.strokeLineShape(new Phaser.Geom.Line(start.x, start.y, end2.x, end2.y));
 
   // @ts-ignore: Argument of type 'World' is not assignable ...
   const bodies = Matter.Composite.allBodies(scene.matter.world.localWorld);
   const reachable = maybeReachable(bodies, octopus);
-  const ray = Matter.Query.ray(reachable, start, end);
-  const cast = raycast(ray.map(obj => obj.body), start, end);
+  const ray = Matter.Query.ray(reachable, start, end2);
+  const cast = raycast(ray.map(obj => obj.body), start, end2);
   const points = cast.map(raycol => raycol.point);
   points.map(({ x, y }) => { graphics.fillPoint(x, y, 10); });
 }
