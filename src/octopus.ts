@@ -11,7 +11,15 @@ function adjacents<T>(array: T[]): [T, T][] {
   return _.times(array.length - 1, i => [array[i], array[i + 1]]);
 }
 
+function bodyToWorld(body: Matter.Body, point: Matter.Vector): Matter.Vector {
+  return Matter.Vector.add(
+    body.position,
+    Matter.Vector.rotate(point, body.angle)
+  );
+}
+
 class Arm {
+  segmentLength: number;
   segmentRadius: number;
   comp: Matter.Composite;
   segments: Matter.Body[];
@@ -29,6 +37,7 @@ class Arm {
       collisionFilter,
     } = config;
 
+    this.segmentLength = segmentLength;
     this.segmentRadius = segmentRadius;
 
     this.segments = _.times(numSegments, () => Matter.Bodies.rectangle(
@@ -71,9 +80,11 @@ class Arm {
     });
   }
 
-  // TODO: make this the actual tip rather than the center of the tip segment
   tipPosition(): Matter.Vector {
-    return this.segments[this.segments.length - 1].position;
+    const i = this.segments.length - 1;
+    const direction = i % 2 == 0 ? 1 : -1;
+    const offset = direction * (this.segmentLength / 2.0 - this.segmentRadius);
+    return bodyToWorld(this.segments[i], { x: offset, y: 0 });
   }
 
   stop() {
