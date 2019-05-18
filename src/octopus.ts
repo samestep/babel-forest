@@ -142,7 +142,7 @@ export class Octopus {
         bodyB: arm.segments[0],
         pointB: { x: offset, y: 0 },
         stiffness: 1,
-        length: 0,
+        length: segmentRadius,
       });
     });
 
