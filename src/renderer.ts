@@ -12,9 +12,7 @@ const config = {
   backgroundColor: '#00ffff',
   physics: {
     default: 'matter',
-    matter: {
-      debug: true
-    }
+    matter: { debug: true },
   },
   scene: {
     preload: preload,
@@ -23,8 +21,8 @@ const config = {
   },
   scale: {
     parent: 'parent',
-    mode: Phaser.Scale.RESIZE
-  }
+    mode: Phaser.Scale.RESIZE,
+  },
 };
 
 const game = new Phaser.Game(config);
