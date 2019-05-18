@@ -78,6 +78,8 @@ function create() {
 }
 
 function update() {
+  octopus.update();
+
   graphics.clear();
 
   const pointer = scene.input.activePointer;
@@ -112,7 +114,15 @@ function update() {
     if (dist < octopus.reach) {
       graphics.fillPoint(point.x, point.y, 10);
       if (clicked) {
-        random.choose(octopus.arms).move(point);
+        let bestArm = octopus.arms[0];
+        octopus.arms.forEach(arm => {
+          const bestDist = Matter.Vector.magnitude(Matter.Vector.sub(bestArm.tipPosition(), point));
+          const newDist = Matter.Vector.magnitude(Matter.Vector.sub(arm.tipPosition(), point));
+          if (newDist > bestDist) {
+            bestArm = arm;
+          }
+        });
+        bestArm.move(point);
       }
     }
   }

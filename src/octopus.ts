@@ -65,6 +65,11 @@ class Arm {
     });
   }
 
+  // TODO: make this the actual tip rather than the center of the tip segment
+  tipPosition(): Matter.Vector {
+    return this.segments[this.segments.length - 1].position;
+  }
+
   stop() {
     Matter.Composite.remove(this.comp, this.hook);
     Matter.Composite.remove(this.comp, this.spring);
@@ -83,6 +88,8 @@ export class Octopus {
   comp: Matter.Composite;
   head: Matter.Body;
   arms: Arm[];
+  hook: Matter.Body;
+  spring: Matter.Constraint;
 
   constructor(config) {
     this.comp = Matter.Composite.create();
@@ -131,6 +138,21 @@ export class Octopus {
     Matter.Composite.add(this.comp, this.arms.map(arm => arm.comp));
     // @ts-ignore: Argument of type 'Constraint[]' is not assignable ...
     Matter.Composite.add(this.comp, constraints);
+
+    this.hook = Matter.Bodies.rectangle(x, y, 1, 1, {
+      isStatic: true,
+      collisionFilter: { ...collisionFilter, mask: 0 }
+    });
+
+    this.spring = Matter.Constraint.create({
+      bodyA: this.head,
+      bodyB: this.hook,
+      stiffness: 0.01,
+      length: 0,
+    });
+
+    Matter.Composite.add(this.comp, this.hook);
+    Matter.Composite.add(this.comp, this.spring);
   }
 
   maybeReachable(bodies: Matter.Body[]): Matter.Body[] {
@@ -143,5 +165,12 @@ export class Octopus {
     const reachBody = Matter.Bodies.circle(center.x, center.y, this.reach);
 
     return Matter.Query.region(relevantBodies, reachBody.bounds);
+  }
+
+  update() {
+    const total = this.arms.reduce((acc, cur) => {
+      return Matter.Vector.add(acc, cur.tipPosition());
+    }, { x: 0, y: 0 });
+    this.hook.position = Matter.Vector.div(total, this.arms.length);
   }
 }
