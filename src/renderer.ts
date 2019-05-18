@@ -17,7 +17,7 @@ const config = {
   scene: {
     preload: preload,
     create: create,
-    update: update
+    update: render,
   },
   scale: {
     parent: 'parent',
@@ -41,13 +41,18 @@ function preload() {
   scene = this;
 }
 
+let graphics: Phaser.GameObjects.Graphics;
+let octopus: Octopus;
+
 function create() {
+  graphics = scene.add.graphics({ lineStyle: { color: 0x000000 } });
+
   scene.matter.add.mouseSpring({ });
   scene.matter.world.setBounds(50, 50, 700, 500);
 
   scene.matter.add.rectangle(500, 300, 100, 50, { isStatic: true });
 
-  const octopus = new Octopus({
+  octopus = new Octopus({
     x: 300, y: 400,
     headRadius: 20,
     numArms: 8,
@@ -58,4 +63,13 @@ function create() {
   scene.matter.world.add(octopus.comp);
 }
 
-function update() { }
+function render() {
+  graphics.clear();
+
+  const pointer = scene.input.activePointer;
+
+  graphics.strokeLineShape(new Phaser.Geom.Line(
+    octopus.head.position.x, octopus.head.position.y,
+    pointer.worldX, pointer.worldY,
+  ));
+}
