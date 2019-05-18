@@ -80,6 +80,6 @@ function update(time: number, delta: number) {
   graphics.fillStyle(0x202020);
   graphics.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
   graphics.fillStyle(0x000000);
-  graphics.fillRect(block.x, block.y, block.width, block.height);
+  graphics.fillRect(block.x - block.width / 2.0, block.y - block.height / 2.0, block.width, block.height);
   octopus.render(graphics);
 }
