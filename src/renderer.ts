@@ -61,6 +61,16 @@ function create() {
     segmentsPerArm: 5,
   });
   scene.matter.world.add(octopus.comp);
+
+  const constraint = Matter.Constraint.create({
+    bodyA: octopus.arms[0].segments[4],
+    bodyB: rect,
+    pointA: { x: 30 / 2.0 - 5, y: 0 },
+    pointB: { x: -100, y: 0 },
+    stiffness: 0.001,
+    length: 0,
+  });
+  scene.matter.world.add(constraint);
 }
 
 function render() {
