@@ -4,6 +4,9 @@ const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
 import * as _ from 'underscore';
 
+import * as random from './random';
+import { raycast } from './raycast';
+
 function adjacents<T>(array: T[]): [T, T][] {
   return _.times(array.length - 1, i => [array[i], array[i + 1]]);
 }
@@ -98,6 +101,8 @@ export class Octopus {
   arms: Arm[];
   hook: Matter.Body;
   spring: Matter.Constraint;
+  goal: Matter.Vector;
+  cooldown: number;
 
   constructor(config) {
     this.comp = Matter.Composite.create();
@@ -161,6 +166,9 @@ export class Octopus {
 
     Matter.Composite.add(this.comp, this.hook);
     Matter.Composite.add(this.comp, this.spring);
+
+    this.goal = null;
+    this.cooldown = 0;
   }
 
   maybeReachable(bodies: Matter.Body[]): Matter.Body[] {
@@ -175,11 +183,45 @@ export class Octopus {
     return Matter.Query.region(relevantBodies, reachBody.bounds);
   }
 
-  update() {
+  update(time: number, delta: number, world: Matter.World) {
     const total = this.arms.reduce((acc, cur) => {
       return Matter.Vector.add(acc, cur.tipPosition());
     }, { x: 0, y: 0 });
     this.hook.position = Matter.Vector.div(total, this.arms.length);
+
+    this.cooldown = Math.max(0, this.cooldown - delta);
+    if (this.goal && this.cooldown <= 0) {
+      const start = this.head.position;
+      const bodies = Matter.Composite.allBodies(world);
+      const reachable = this.maybeReachable(bodies);
+      const angles = _.times(10, () => random.weighted(-Math.PI/2, Math.PI/2));
+
+      for (let i = 0; i < angles.length; i++) {
+        const v1 = Matter.Vector.sub(this.goal, start);
+        const v2 = Matter.Vector.rotate(v1, angles[i]);
+        const end2 = Matter.Vector.add(start, v2);
+
+        const ray = Matter.Query.ray(reachable, start, end2);
+        const cast = raycast(ray.map(obj => obj.body), start, end2);
+        const point = cast.map(raycol => raycol.point)[0];
+        if (point) {
+          const dist = Matter.Vector.magnitude(Matter.Vector.sub(point, start));
+          if (dist < this.reach) {
+            let bestArm = this.arms[0];
+            this.arms.forEach(arm => {
+              const bestDist = Matter.Vector.magnitude(Matter.Vector.sub(bestArm.tipPosition(), point));
+              const newDist = Matter.Vector.magnitude(Matter.Vector.sub(arm.tipPosition(), point));
+              if (newDist > bestDist) {
+                bestArm = arm;
+              }
+            });
+            bestArm.move(point);
+            this.cooldown = 100;
+            break;
+          }
+        }
+      }
+    }
 
     this.arms.forEach(arm => arm.update(this.head.position, this.reach));
   }
