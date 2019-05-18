@@ -81,6 +81,14 @@ class Arm {
     Matter.Composite.add(this.comp, this.hook);
     Matter.Composite.add(this.comp, this.spring);
   }
+
+  update(center: Matter.Vector, reach: number) {
+    const v = Matter.Vector.sub(this.hook.position, center);
+    const dist = Matter.Vector.magnitude(v);
+    if (dist > reach) {
+      this.stop();
+    }
+  }
 }
 
 export class Octopus {
@@ -172,5 +180,7 @@ export class Octopus {
       return Matter.Vector.add(acc, cur.tipPosition());
     }, { x: 0, y: 0 });
     this.hook.position = Matter.Vector.div(total, this.arms.length);
+
+    this.arms.forEach(arm => arm.update(this.head.position, this.reach));
   }
 }
