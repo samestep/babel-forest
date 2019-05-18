@@ -50,7 +50,8 @@ function create() {
   scene.matter.add.mouseSpring({ });
   scene.matter.world.setBounds(50, 50, 700, 500);
 
-  scene.matter.add.rectangle(500, 300, 100, 50, { isStatic: true });
+  const rect = Matter.Bodies.rectangle(500, 300, 100, 50, { isStatic: true });
+  scene.matter.world.add(rect);
 
   octopus = new Octopus({
     x: 300, y: 400,
