@@ -49,6 +49,7 @@ class Arm {
 }
 
 export class Octopus {
+  reach: number;
   comp: Matter.Composite;
   head: Matter.Body;
   arms: Arm[];
@@ -64,6 +65,8 @@ export class Octopus {
       segmentRadius,
       segmentsPerArm,
     } = config;
+
+    this.reach = (segmentLength - 2 * segmentRadius) * segmentsPerArm;
 
     const group = Matter.Body.nextGroup(true);
     const collisionFilter = {
@@ -99,4 +102,10 @@ export class Octopus {
     // @ts-ignore: Argument of type 'Constraint[]' is not assignable ...
     Matter.Composite.add(this.comp, constraints);
   }
+}
+
+export function maybeReachable(bodies: Matter.Body[], octopus: Octopus) {
+  const center = octopus.head.position;
+  const reachBody = Matter.Bodies.circle(center.x, center.y, octopus.reach);
+  return Matter.Query.region(bodies, reachBody.bounds);
 }

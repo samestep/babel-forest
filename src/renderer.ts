@@ -4,7 +4,7 @@ import * as MatterJS from 'matter-js';
 // @ts-ignore: Property 'Matter' does not exist on type 'typeof Matter'.
 const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
-import { Octopus } from './octopus';
+import { Octopus, maybeReachable } from './octopus';
 import { raycast } from './raycast';
 
 const config = {
@@ -95,7 +95,8 @@ function render() {
 
   // @ts-ignore: Argument of type 'World' is not assignable ...
   const bodies = Matter.Composite.allBodies(scene.matter.world.localWorld);
-  const ray = Matter.Query.ray(bodies, start, end);
+  const reachable = maybeReachable(bodies, octopus);
+  const ray = Matter.Query.ray(reachable, start, end);
   const cast = raycast(ray.map(obj => obj.body), start, end);
   const points = cast.map(raycol => raycol.point);
   points.map(({ x, y }) => { graphics.fillPoint(x, y, 10); });
