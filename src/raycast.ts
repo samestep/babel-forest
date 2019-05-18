@@ -1,6 +1,10 @@
 // https://github.com/liabru/matter-js/issues/181
 // https://pastebin.com/7M2CvK29
 
+import * as MatterJS from 'matter-js';
+// @ts-ignore: Property 'Matter' does not exist on type 'typeof Matter'.
+const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
+
 //
 //				code by Isaiah Smith
 //		technostalgic.itch.io  |  @technostalgicGM
@@ -16,7 +20,7 @@
 //param 'end' - end point of raycast
 //param 'sort' - whether or not the ray collisions should be
 //	sorted based on distance from the origin
-function raycast(bodies, start, end, sort = true){
+export function raycast(bodies, start, end, sort = true){
 	//convert the start & end parameters to my custom
 	//'vec2' object type
 	start = vec2.fromOther(start);

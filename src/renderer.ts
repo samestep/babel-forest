@@ -5,6 +5,7 @@ import * as MatterJS from 'matter-js';
 const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
 import { Octopus } from './octopus';
+import { raycast } from './raycast';
 
 const config = {
   backgroundColor: '#00ffff',
@@ -45,7 +46,10 @@ let graphics: Phaser.GameObjects.Graphics;
 let octopus: Octopus;
 
 function create() {
-  graphics = scene.add.graphics({ lineStyle: { color: 0x000000 } });
+  graphics = scene.add.graphics({
+    lineStyle: { color: 0x000000 },
+    fillStyle: { color: 0xff0000 },
+  });
 
   scene.matter.add.mouseSpring({ });
   scene.matter.world.setBounds(50, 50, 700, 500);
@@ -79,8 +83,20 @@ function render() {
 
   const pointer = scene.input.activePointer;
 
-  graphics.strokeLineShape(new Phaser.Geom.Line(
-    octopus.head.position.x, octopus.head.position.y,
-    pointer.worldX, pointer.worldY,
-  ));
+  const x1 = octopus.head.position.x;
+  const y1 = octopus.head.position.y;
+  const x2 = pointer.worldX;
+  const y2 = pointer.worldY;
+
+  graphics.strokeLineShape(new Phaser.Geom.Line(x1, y1, x2, y2));
+
+  const start = { x: x1, y: y1 };
+  const end = { x: x2, y: y2 };
+
+  // @ts-ignore: Argument of type 'World' is not assignable ...
+  const bodies = Matter.Composite.allBodies(scene.matter.world.localWorld);
+  const ray = Matter.Query.ray(bodies, start, end);
+  const cast = raycast(ray.map(obj => obj.body), start, end);
+  const points = cast.map(raycol => raycol.point);
+  points.map(({ x, y }) => { graphics.fillPoint(x, y, 10); });
 }
