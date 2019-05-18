@@ -280,7 +280,12 @@ export class Octopus {
 
   render(graphics: Phaser.GameObjects.Graphics) {
     graphics.fillStyle(0xffa500);
-    graphics.fillCircle(this.head.position.x, this.head.position.y, this.headRadius);
     this.arms.forEach(arm => arm.render(graphics, this.head.position));
+    const center = this.head.position;
+    const radius = this.headRadius;
+    graphics.fillCircle(center.x, center.y, radius);
+    graphics.fillStyle(0xffffff);
+    graphics.fillEllipse(center.x - radius / 3.0, center.y, radius / 5.0, radius / 2.0);
+    graphics.fillEllipse(center.x + radius / 3.0, center.y, radius / 5.0, radius / 2.0);
   }
 }
