@@ -11,6 +11,8 @@ function adjacents<T>(array: T[]): [T, T][] {
 class Arm {
   comp: Matter.Composite;
   segments: Matter.Body[];
+  hook: Matter.Body;
+  spring: Matter.Constraint;
 
   constructor(config) {
     this.comp = Matter.Composite.create();
@@ -45,6 +47,34 @@ class Arm {
     Matter.Composite.add(this.comp, this.segments);
     // @ts-ignore: Argument of type 'Constraint[]' is not assignable ...
     Matter.Composite.add(this.comp, constraints);
+
+    this.hook = Matter.Bodies.rectangle(x, y, 1, 1, {
+      isStatic: true,
+      collisionFilter: { ...collisionFilter, mask: 0 }
+    });
+
+    const i = numSegments - 1;
+    const direction = i % 2 == 0 ? 1 : -1;
+    const offset = direction * (segmentLength / 2.0 - segmentRadius);
+    this.spring = Matter.Constraint.create({
+      bodyA: this.segments[numSegments - 1],
+      bodyB: this.hook,
+      pointA: { x: offset, y: 0 },
+      stiffness: 0.003,
+      length: 0,
+    });
+  }
+
+  stop() {
+    Matter.Composite.remove(this.comp, this.hook);
+    Matter.Composite.remove(this.comp, this.spring);
+  }
+
+  move(point: Matter.Vector) {
+    this.hook.position = point;
+
+    Matter.Composite.add(this.comp, this.hook);
+    Matter.Composite.add(this.comp, this.spring);
   }
 }
 

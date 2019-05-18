@@ -50,7 +50,7 @@ let octopus: Octopus;
 
 let clicked = true;
 
-let angles: number[];
+let angle: number;
 
 function create() {
   graphics = scene.add.graphics({
@@ -74,16 +74,6 @@ function create() {
   });
   scene.matter.world.add(octopus.comp);
 
-  const constraint = Matter.Constraint.create({
-    bodyA: octopus.arms[0].segments[4],
-    bodyB: rect,
-    pointA: { x: 30 / 2.0 - 5, y: 0 },
-    pointB: { x: -100, y: 0 },
-    stiffness: 0.001,
-    length: 0,
-  });
-  scene.matter.world.add(constraint);
-
   scene.input.on('pointerdown', () => { clicked = true; });
 }
 
@@ -101,23 +91,33 @@ function render() {
   const end = { x: x2, y: y2 };
 
   if (clicked) {
-    clicked = false;
-    angles = _.times(10, () => random.weighted(-Math.PI/2, Math.PI/2));
+    angle = random.weighted(-Math.PI/2, Math.PI/2);
+    angle = 0;
   }
 
-  angles.forEach((angle: number) => {
-    const v1 = Matter.Vector.sub(end, start);
-    const v2 = Matter.Vector.rotate(v1, angle);
-    const end2 = Matter.Vector.add(start, v2);
+  const v1 = Matter.Vector.sub(end, start);
+  const v2 = Matter.Vector.rotate(v1, angle);
+  const end2 = Matter.Vector.add(start, v2);
 
-    graphics.strokeLineShape(new Phaser.Geom.Line(start.x, start.y, end2.x, end2.y));
+  graphics.strokeLineShape(new Phaser.Geom.Line(start.x, start.y, end2.x, end2.y));
 
-    // @ts-ignore: Argument of type 'World' is not assignable ...
-    const bodies = Matter.Composite.allBodies(scene.matter.world.localWorld);
-    const reachable = octopus.maybeReachable(bodies);
-    const ray = Matter.Query.ray(reachable, start, end2);
-    const cast = raycast(ray.map(obj => obj.body), start, end2);
-    const points = cast.map(raycol => raycol.point);
-    points.map(({ x, y }) => { graphics.fillPoint(x, y, 10); });
-  });
+  // @ts-ignore: Argument of type 'World' is not assignable ...
+  const bodies = Matter.Composite.allBodies(scene.matter.world.localWorld);
+  const reachable = octopus.maybeReachable(bodies);
+  const ray = Matter.Query.ray(reachable, start, end2);
+  const cast = raycast(ray.map(obj => obj.body), start, end2);
+  const point = cast.map(raycol => raycol.point)[0];
+  if (point) {
+    const dist = Matter.Vector.magnitude(Matter.Vector.sub(point, start));
+    if (dist < octopus.reach) {
+      graphics.fillPoint(point.x, point.y, 10);
+      if (clicked) {
+        random.choose(octopus.arms).move(point);
+      }
+    }
+  }
+
+  if (clicked) {
+    clicked = false;
+  }
 }
