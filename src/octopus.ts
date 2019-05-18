@@ -200,7 +200,6 @@ export class Octopus {
     if (this.goal && this.cooldown <= 0) {
       this.cooldown = 100;
       const bestArm = this.arms[this.armOrder[0]];
-      // bestArm.stop();
       this.armOrder.shift();
       if (this.armOrder.length == 0) {
         this.replenishArmOrder();
