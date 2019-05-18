@@ -1,3 +1,5 @@
+/// <reference path="../node_modules/phaser/types/phaser.d.ts" />
+
 import * as MatterJS from 'matter-js';
 // @ts-ignore: Property 'Matter' does not exist on type 'typeof Matter'.
 const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
