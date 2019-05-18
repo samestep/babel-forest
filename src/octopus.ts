@@ -95,6 +95,7 @@ class Arm {
 }
 
 export class Octopus {
+  headRadius: number,
   reach: number;
   comp: Matter.Composite;
   head: Matter.Body;
@@ -103,6 +104,7 @@ export class Octopus {
   spring: Matter.Constraint;
   goal: Matter.Vector;
   cooldown: number;
+  armOrder: number[];
 
   constructor(config) {
     this.comp = Matter.Composite.create();
@@ -116,6 +118,7 @@ export class Octopus {
       segmentsPerArm,
     } = config;
 
+    this.headRadius = headRadius;
     this.reach = (segmentLength - 2 * segmentRadius) * segmentsPerArm;
 
     const group = Matter.Body.nextGroup(true);
@@ -169,6 +172,12 @@ export class Octopus {
 
     this.goal = null;
     this.cooldown = 0;
+    this.replenishArmOrder();
+  }
+
+  replenishArmOrder() {
+    // TODO: shuffle these
+    this.armOrder = this.arms.map((arm, i) => i);
   }
 
   maybeReachable(bodies: Matter.Body[]): Matter.Body[] {
@@ -187,39 +196,51 @@ export class Octopus {
     const total = this.arms.reduce((acc, cur) => {
       return Matter.Vector.add(acc, cur.tipPosition());
     }, { x: 0, y: 0 });
-    this.hook.position = Matter.Vector.div(total, this.arms.length);
+    this.hook.position = Matter.Vector.add(
+      Matter.Vector.div(total, this.arms.length),
+      { x: 0, y: -this.headRadius },
+    );
 
     this.cooldown = Math.max(0, this.cooldown - delta);
     if (this.goal && this.cooldown <= 0) {
+      this.cooldown = 100;
+      const bestArm = this.arms[this.armOrder[0]];
+      // bestArm.stop();
+      this.armOrder.shift();
+      if (this.armOrder.length == 0) {
+        this.replenishArmOrder();
+      }
+
       const start = this.head.position;
       const bodies = Matter.Composite.allBodies(world);
       const reachable = this.maybeReachable(bodies);
       const angles = _.times(10, () => random.weighted(-Math.PI/2, Math.PI/2));
 
-      for (let i = 0; i < angles.length; i++) {
+      const points = angles.map(angle => {
         const v1 = Matter.Vector.sub(this.goal, start);
-        const v2 = Matter.Vector.rotate(v1, angles[i]);
+        const v2 = Matter.Vector.rotate(v1, angle);
         const end2 = Matter.Vector.add(start, v2);
 
         const ray = Matter.Query.ray(reachable, start, end2);
         const cast = raycast(ray.map(obj => obj.body), start, end2);
-        const point = cast.map(raycol => raycol.point)[0];
-        if (point) {
-          const dist = Matter.Vector.magnitude(Matter.Vector.sub(point, start));
-          if (dist < this.reach) {
-            let bestArm = this.arms[0];
-            this.arms.forEach(arm => {
-              const bestDist = Matter.Vector.magnitude(Matter.Vector.sub(bestArm.tipPosition(), point));
-              const newDist = Matter.Vector.magnitude(Matter.Vector.sub(arm.tipPosition(), point));
-              if (newDist > bestDist) {
-                bestArm = arm;
-              }
-            });
-            bestArm.move(point);
-            this.cooldown = 100;
-            break;
-          }
+        return cast.map(raycol => raycol.point)[0];
+      }).filter(point => {
+        if (!point) {
+          return false;
         }
+        const dist = Matter.Vector.magnitude(Matter.Vector.sub(point, start));
+        if (dist > this.reach) {
+          return false;
+        }
+        return true;
+      });
+      if (points.length > 0) {
+        const point = points.reduce((acc, cur) => {
+          const d1 = Matter.Vector.magnitude(Matter.Vector.sub(acc, this.goal));
+          const d2 = Matter.Vector.magnitude(Matter.Vector.sub(cur, this.goal));
+          return d2 < d1 ? cur : acc;
+        }, points[0]);
+        bestArm.move(point);
       }
     }
 
