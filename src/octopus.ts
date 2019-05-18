@@ -95,7 +95,6 @@ class Arm {
 }
 
 export class Octopus {
-  headRadius: number,
   reach: number;
   comp: Matter.Composite;
   head: Matter.Body;
@@ -118,7 +117,6 @@ export class Octopus {
       segmentsPerArm,
     } = config;
 
-    this.headRadius = headRadius;
     this.reach = (segmentLength - 2 * segmentRadius) * segmentsPerArm;
 
     const group = Matter.Body.nextGroup(true);
@@ -196,10 +194,7 @@ export class Octopus {
     const total = this.arms.reduce((acc, cur) => {
       return Matter.Vector.add(acc, cur.tipPosition());
     }, { x: 0, y: 0 });
-    this.hook.position = Matter.Vector.add(
-      Matter.Vector.div(total, this.arms.length),
-      { x: 0, y: -this.headRadius },
-    );
+    this.hook.position = Matter.Vector.div(total, this.arms.length);
 
     this.cooldown = Math.max(0, this.cooldown - delta);
     if (this.goal && this.cooldown <= 0) {
@@ -214,7 +209,7 @@ export class Octopus {
       const start = this.head.position;
       const bodies = Matter.Composite.allBodies(world);
       const reachable = this.maybeReachable(bodies);
-      const angles = _.times(10, () => random.weighted(-Math.PI/2, Math.PI/2));
+      const angles = _.times(100, () => random.weighted(-Math.PI/2, Math.PI/2));
 
       const points = angles.map(angle => {
         const v1 = Matter.Vector.sub(this.goal, start);
@@ -241,6 +236,8 @@ export class Octopus {
           return d2 < d1 ? cur : acc;
         }, points[0]);
         bestArm.move(point);
+      } else {
+        bestArm.stop();
       }
     }
 
