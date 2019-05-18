@@ -201,7 +201,6 @@ export class Octopus {
   }
 
   replenishArmOrder() {
-    // TODO: shuffle these
     this.armOrder = this.arms.map((arm, i) => i);
   }
 
