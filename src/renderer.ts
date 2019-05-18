@@ -4,6 +4,8 @@ import * as MatterJS from 'matter-js';
 // @ts-ignore: Property 'Matter' does not exist on type 'typeof Matter'.
 const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
+import * as _ from 'underscore';
+
 import { Octopus, maybeReachable } from './octopus';
 import * as random from './random';
 import { raycast } from './raycast';
@@ -46,6 +48,10 @@ function preload() {
 let graphics: Phaser.GameObjects.Graphics;
 let octopus: Octopus;
 
+let clicked = true;
+
+let angles;
+
 function create() {
   graphics = scene.add.graphics({
     lineStyle: { color: 0x000000 },
@@ -77,6 +83,8 @@ function create() {
     length: 0,
   });
   scene.matter.world.add(constraint);
+
+  scene.input.on('pointerdown', () => { clicked = true; });
 }
 
 function render() {
@@ -92,18 +100,24 @@ function render() {
   const start = { x: x1, y: y1 };
   const end = { x: x2, y: y2 };
 
-  const v1 = Matter.Vector.sub(end, start);
-  const angle = random.weighted(-Math.PI/2, Math.PI/2);
-  const v2 = Matter.Vector.rotate(v1, angle);
-  const end2 = Matter.Vector.add(start, v2);
+  if (clicked) {
+    clicked = false;
+    angles = _.times(10, () => random.weighted(-Math.PI/2, Math.PI/2));
+  }
 
-  graphics.strokeLineShape(new Phaser.Geom.Line(start.x, start.y, end2.x, end2.y));
+  angles.forEach(angle => {
+    const v1 = Matter.Vector.sub(end, start);
+    const v2 = Matter.Vector.rotate(v1, angle);
+    const end2 = Matter.Vector.add(start, v2);
 
-  // @ts-ignore: Argument of type 'World' is not assignable ...
-  const bodies = Matter.Composite.allBodies(scene.matter.world.localWorld);
-  const reachable = maybeReachable(bodies, octopus);
-  const ray = Matter.Query.ray(reachable, start, end2);
-  const cast = raycast(ray.map(obj => obj.body), start, end2);
-  const points = cast.map(raycol => raycol.point);
-  points.map(({ x, y }) => { graphics.fillPoint(x, y, 10); });
+    graphics.strokeLineShape(new Phaser.Geom.Line(start.x, start.y, end2.x, end2.y));
+
+    // @ts-ignore: Argument of type 'World' is not assignable ...
+    const bodies = Matter.Composite.allBodies(scene.matter.world.localWorld);
+    const reachable = maybeReachable(bodies, octopus);
+    const ray = Matter.Query.ray(reachable, start, end2);
+    const cast = raycast(ray.map(obj => obj.body), start, end2);
+    const points = cast.map(raycol => raycol.point);
+    points.map(({ x, y }) => { graphics.fillPoint(x, y, 10); });
+  });
 }
