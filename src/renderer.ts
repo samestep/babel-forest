@@ -50,7 +50,7 @@ let octopus: Octopus;
 
 let clicked = true;
 
-let angles;
+let angles: number[];
 
 function create() {
   graphics = scene.add.graphics({
@@ -105,7 +105,7 @@ function render() {
     angles = _.times(10, () => random.weighted(-Math.PI/2, Math.PI/2));
   }
 
-  angles.forEach(angle => {
+  angles.forEach((angle: number) => {
     const v1 = Matter.Vector.sub(end, start);
     const v2 = Matter.Vector.rotate(v1, angle);
     const end2 = Matter.Vector.add(start, v2);

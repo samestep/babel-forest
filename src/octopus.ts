@@ -4,7 +4,7 @@ const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
 import * as _ from 'underscore';
 
-function adjacents(array) {
+function adjacents<T>(array: T[]): [T, T][] {
   return _.times(array.length - 1, i => [array[i], array[i + 1]]);
 }
 
@@ -31,7 +31,6 @@ class Arm {
     const constraints = adjacents(this.segments).map(([s1, s2], i) => {
       const direction = i % 2 == 0 ? 1 : -1;
       const offset = direction * (segmentLength / 2.0 - segmentRadius);
-      const point = { x: offset, y: 0 };
       return Matter.Constraint.create({
         bodyA: s1,
         pointA: { x: offset, y: 0 },
@@ -44,6 +43,7 @@ class Arm {
 
     // @ts-ignore: Argument of type 'Body[]' is not assignable ...
     Matter.Composite.add(this.comp, this.segments);
+    // @ts-ignore: Argument of type 'Constraint[]' is not assignable ...
     Matter.Composite.add(this.comp, constraints);
   }
 }
