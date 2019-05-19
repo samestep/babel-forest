@@ -49,7 +49,7 @@ class Arm {
     ));
 
     const constraints = adjacents(this.segments).map(([s1, s2], i) => {
-      const direction = i % 2 == 0 ? 1 : -1;
+      const direction = i % 2 === 0 ? 1 : -1;
       const offset = direction * (segmentLength / 2.0 - segmentRadius);
       return Matter.Constraint.create({
         bodyA: s1,
@@ -72,7 +72,7 @@ class Arm {
     });
 
     const i = numSegments - 1;
-    const direction = i % 2 == 0 ? 1 : -1;
+    const direction = i % 2 === 0 ? 1 : -1;
     const offset = direction * (segmentLength / 2.0 - segmentRadius);
     this.spring = Matter.Constraint.create({
       bodyA: this.segments[numSegments - 1],
@@ -89,7 +89,7 @@ class Arm {
   }
 
   segmentTip(index: number): Matter.Vector {
-    const direction = index % 2 == 0 ? 1 : -1;
+    const direction = index % 2 === 0 ? 1 : -1;
     const offset = direction * (this.segmentLength / 2.0 - this.segmentRadius);
     return bodyToWorld(this.segments[index], { x: offset, y: 0 });
   }
@@ -312,7 +312,7 @@ export class Octopus {
         this.cooldown = 100;
         const bestArm = this.arms[this.armOrder[0]];
         this.armOrder.shift();
-        if (this.armOrder.length == 0) {
+        if (this.armOrder.length === 0) {
           this.replenishArmOrder();
         }
         this.moveArm(reachable, bestArm, 100);
