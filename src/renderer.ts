@@ -39,8 +39,8 @@ function preload() {
   scene = this;
 }
 
-const bounds = { x: 50, y: 50, width: 700, height: 500};
-const block = { x: 500, y: 300, width: 100, height: 50};
+const bounds = { x: -250, y: -250, width: 500, height: 500};
+const block = { x: -100, y: 100, width: 50, height: 50};
 
 let graphics: Phaser.GameObjects.Graphics;
 let octopus: Octopus;
@@ -58,7 +58,7 @@ function create() {
   scene.matter.world.add(rect);
 
   octopus = new Octopus({
-    x: 300, y: 400,
+    x: 0, y: 0,
     headRadius: 20,
     numArms: 8,
     segmentLength: 30,
