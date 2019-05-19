@@ -134,6 +134,9 @@ class Arm {
   }
 }
 
+// in ms
+const jumpLength = 1000;
+
 export class Octopus {
   headRadius: number;
   reach: number;
@@ -144,6 +147,8 @@ export class Octopus {
   spring: Matter.Constraint;
   goal: Matter.Vector;
   cooldown: number;
+  jumpCooldown: number;
+  jumpDirection: Matter.Vector;
   armOrder: number[];
 
   constructor(config) {
@@ -212,6 +217,8 @@ export class Octopus {
 
     this.goal = null;
     this.cooldown = 0;
+    this.jumpCooldown = 0;
+    this.jumpDirection = { x: 0, y: 0 };
     this.replenishArmOrder();
   }
 
@@ -232,14 +239,25 @@ export class Octopus {
   }
 
   jump(toward: Matter.Vector) {
-    this.arms.forEach(arm => arm.stop());
+    if (this.jumpCooldown <= 0) {
+      this.jumpCooldown = jumpLength;
+      this.arms.forEach(arm => arm.stop());
+
+      const rawDiff = Matter.Vector.sub(toward, this.head.position);
+      const normalized = Matter.Vector.normalise(rawDiff);
+      this.jumpDirection = Matter.Vector.mult(normalized, 200);
+    }
   }
 
   update(time: number, delta: number, world: Matter.World) {
     const total = this.arms.reduce((acc, cur) => {
       return Matter.Vector.add(acc, cur.tipPosition());
     }, { x: 0, y: 0 });
-    this.hook.position = Matter.Vector.div(total, this.arms.length);
+    this.jumpCooldown = Math.max(0, this.jumpCooldown - delta);
+    this.hook.position = Matter.Vector.add(
+      Matter.Vector.div(total, this.arms.length),
+      Matter.Vector.mult(this.jumpDirection, (1.0/jumpLength)*this.jumpCooldown),
+    );
 
     this.cooldown = Math.max(0, this.cooldown - delta);
     if (this.goal && this.cooldown <= 0) {
