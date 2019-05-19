@@ -44,6 +44,8 @@ const block = { x: 500, y: 300, width: 100, height: 50};
 
 let graphics: Phaser.GameObjects.Graphics;
 let octopus: Octopus;
+let spacebar: Phaser.Input.Keyboard.Key;
+let jump: boolean;
 
 function create() {
   graphics = scene.add.graphics();
@@ -64,15 +66,25 @@ function create() {
     segmentsPerArm: 5,
   });
   scene.matter.world.add(octopus.comp);
+
+  spacebar = scene.input.keyboard.addKey('SPACE');
+  spacebar.on('down', () => { jump = true; });
 }
 
 function update(time: number, delta: number) {
   const pointer = scene.input.activePointer;
+  const pointerLocation = { x: pointer.worldX, y: pointer.worldY };
   if (pointer.leftButtonDown()) {
-    octopus.goal = { x: pointer.worldX, y: pointer.worldY };
+    octopus.goal = pointerLocation;
   } else {
     octopus.goal = null;
   }
+
+  if (jump) {
+    octopus.jump(pointerLocation);
+    jump = false;
+  }
+
   // @ts-ignore: Argument of type 'MatterJS.World' is not assignable ...
   octopus.update(time, delta, scene.matter.world.localWorld);
 

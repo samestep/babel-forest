@@ -27,6 +27,7 @@ class Arm {
   segments: Matter.Body[];
   hook: Matter.Body;
   spring: Matter.Constraint;
+  stopped: boolean;
 
   constructor(config) {
     this.comp = Matter.Composite.create();
@@ -77,9 +78,14 @@ class Arm {
       bodyA: this.segments[numSegments - 1],
       bodyB: this.hook,
       pointA: { x: offset, y: 0 },
-      stiffness: 0.003,
+      stiffness: 0.01,
       length: 0,
     });
+
+    Matter.Composite.add(this.comp, this.hook);
+    Matter.Composite.add(this.comp, this.spring);
+
+    this.stopped = true;
   }
 
   segmentTip(index: number): Matter.Vector {
@@ -93,15 +99,12 @@ class Arm {
   }
 
   stop() {
-    Matter.Composite.remove(this.comp, this.hook);
-    Matter.Composite.remove(this.comp, this.spring);
+    this.stopped = true;
   }
 
   move(point: Matter.Vector) {
     this.hook.position = point;
-
-    Matter.Composite.add(this.comp, this.hook);
-    Matter.Composite.add(this.comp, this.spring);
+    this.stopped = false;
   }
 
   update(center: Matter.Vector, reach: number) {
@@ -109,6 +112,9 @@ class Arm {
     const dist = Matter.Vector.magnitude(v);
     if (dist > reach) {
       this.stop();
+    }
+    if (this.stopped) {
+      this.hook.position = this.tipPosition();
     }
   }
 
@@ -225,6 +231,10 @@ export class Octopus {
     return Matter.Query.region(relevantBodies, reachBody.bounds);
   }
 
+  jump(toward: Matter.Vector) {
+    this.arms.forEach(arm => arm.stop());
+  }
+
   update(time: number, delta: number, world: Matter.World) {
     const total = this.arms.reduce((acc, cur) => {
       return Matter.Vector.add(acc, cur.tipPosition());
@@ -270,8 +280,6 @@ export class Octopus {
           return d2 < d1 ? cur : acc;
         }, points[0]);
         bestArm.move(point);
-      } else {
-        this.arms.forEach(arm => arm.stop());
       }
     }
 
