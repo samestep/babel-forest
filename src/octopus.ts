@@ -293,7 +293,15 @@ export class Octopus {
       const total = this.arms.reduce((acc, cur) => {
         return Matter.Vector.add(acc, cur.tipPosition());
       }, { x: 0, y: 0 });
-      this.hook.position = Matter.Vector.div(total, this.arms.length);
+      const centroid = Matter.Vector.div(total, this.arms.length);
+      if (this.goal) {
+        const dir = Matter.Vector.sub(this.goal, this.head.position);
+        const normie = Matter.Vector.normalise(dir); // yes I'm fun at parties
+        const lean = Matter.Vector.mult(normie, 2*this.headRadius);
+        this.hook.position = Matter.Vector.add(centroid, lean);
+      } else {
+        this.hook.position = centroid;
+      }
     } else {
       this.hook.position = Matter.Vector.add(
         this.head.position,
@@ -309,7 +317,7 @@ export class Octopus {
     if (this.goal) {
       this.arms.filter(arm => arm.stopped).forEach(arm => this.moveArm(reachable, arm, 1));
       if (this.cooldown <= 0) {
-        this.cooldown = 100;
+        this.cooldown = 200;
         const bestArm = this.arms[this.armOrder[0]];
         this.armOrder.shift();
         if (this.armOrder.length === 0) {
