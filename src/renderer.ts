@@ -40,8 +40,11 @@ function preload() {
 let graphics: Phaser.GameObjects.Graphics;
 let world: World;
 let octopus: Octopus;
-let spacebar: Phaser.Input.Keyboard.Key;
-let jump: boolean;
+let wDown = false;
+let aDown = false;
+let sDown = false;
+let dDown = false;
+let jump = false;
 
 function create() {
   graphics = scene.add.graphics();
@@ -59,20 +62,37 @@ function create() {
   });
   scene.matter.world.add(octopus.comp);
 
-  spacebar = scene.input.keyboard.addKey('SPACE');
+  const spacebar = scene.input.keyboard.addKey('SPACE');
   spacebar.on('down', () => { jump = true; });
+
+  const [w, a, s, d] = ['W', 'A', 'S', 'D'].map(k => {
+    return scene.input.keyboard.addKey(k);
+  });
+  w.on('down', () => { wDown = true; });
+  a.on('down', () => { aDown = true; });
+  s.on('down', () => { sDown = true; });
+  d.on('down', () => { dDown = true; });
+  w.on('up', () => { wDown = false; });
+  a.on('up', () => { aDown = false; });
+  s.on('up', () => { sDown = false; });
+  d.on('up', () => { dDown = false; });
 }
 
 function update(time: number, delta: number) {
-  const pointer = scene.input.activePointer;
-  const pointerLocation = { x: pointer.worldX, y: pointer.worldY };
-  if (pointer.leftButtonDown()) {
-    octopus.goal = pointerLocation;
+  const movingDir = { x: octopus.head.position.x, y: octopus.head.position.y };
+  if (wDown) { movingDir.y -= 100; }
+  if (aDown) { movingDir.x -= 100; }
+  if (sDown) { movingDir.y += 100; }
+  if (dDown) { movingDir.x += 100; }
+  if (wDown || aDown || sDown || dDown) {
+    octopus.goal = movingDir;
   } else {
     octopus.goal = null;
   }
 
   if (jump) {
+    const pointer = scene.input.activePointer;
+    const pointerLocation = { x: pointer.worldX, y: pointer.worldY };
     octopus.jump(pointerLocation);
     jump = false;
   }
