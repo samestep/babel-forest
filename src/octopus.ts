@@ -239,7 +239,8 @@ export class Octopus {
   }
 
   jump(toward: Matter.Vector) {
-    if (this.jumpCooldown <= 0) {
+    const grounded = this.arms.some(arm => !(arm.stopped));
+    if (grounded && this.jumpCooldown <= 0) {
       this.jumpCooldown = jumpLength;
       this.arms.forEach(arm => arm.stop());
 
@@ -250,16 +251,24 @@ export class Octopus {
   }
 
   update(time: number, delta: number, world: Matter.World) {
-    const total = this.arms.reduce((acc, cur) => {
-      return Matter.Vector.add(acc, cur.tipPosition());
-    }, { x: 0, y: 0 });
-    this.jumpCooldown = Math.max(0, this.jumpCooldown - delta);
-    this.hook.position = Matter.Vector.add(
-      Matter.Vector.div(total, this.arms.length),
-      Matter.Vector.mult(this.jumpDirection, (1.0/jumpLength)*this.jumpCooldown),
-    );
-
     this.cooldown = Math.max(0, this.cooldown - delta);
+    this.jumpCooldown = Math.max(0, this.jumpCooldown - delta);
+
+    if (this.goal) {
+      const total = this.arms.reduce((acc, cur) => {
+        return Matter.Vector.add(acc, cur.tipPosition());
+      }, { x: 0, y: 0 });
+      this.hook.position = Matter.Vector.div(total, this.arms.length);
+    } else {
+      this.hook.position = Matter.Vector.add(
+        this.head.position,
+        Matter.Vector.mult(
+          this.jumpDirection,
+          (1.0/jumpLength)*Math.max(0, this.jumpCooldown - jumpLength*0.5)
+        ),
+      );
+    }
+
     if (this.goal && this.cooldown <= 0) {
       this.cooldown = 100;
       const bestArm = this.arms[this.armOrder[0]];
