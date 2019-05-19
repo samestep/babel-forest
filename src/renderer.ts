@@ -1,14 +1,12 @@
 /// <reference path="../node_modules/phaser/types/phaser.d.ts" />
 
-import * as MatterJS from 'matter-js';
-// @ts-ignore: Property 'Matter' does not exist on type 'typeof Matter'.
-const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
-
 import * as _ from 'underscore';
 
 import { Octopus } from './octopus';
+import { World } from './world';
 
 const config = {
+  backgroundColor: '#303030',
   physics: {
     default: 'matter',
   },
@@ -39,10 +37,8 @@ function preload() {
   scene = this;
 }
 
-const bounds = { x: -250, y: -250, width: 500, height: 500};
-const block = { x: -100, y: 100, width: 50, height: 50};
-
 let graphics: Phaser.GameObjects.Graphics;
+let world: World;
 let octopus: Octopus;
 let spacebar: Phaser.Input.Keyboard.Key;
 let jump: boolean;
@@ -50,12 +46,8 @@ let jump: boolean;
 function create() {
   graphics = scene.add.graphics();
 
-  scene.matter.world.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
-
-  const rect = Matter.Bodies.rectangle(
-    block.x, block.y, block.width, block.height, { isStatic: true }
-  );
-  scene.matter.world.add(rect);
+  world = new World();
+  scene.matter.world.add(world.comp);
 
   octopus = new Octopus({
     x: 0, y: 0,
@@ -85,15 +77,13 @@ function update(time: number, delta: number) {
     jump = false;
   }
 
+  world.update(scene.cameras.main.worldView);
   // @ts-ignore: Argument of type 'MatterJS.World' is not assignable ...
   octopus.update(time, delta, scene.matter.world.localWorld);
 
   scene.cameras.main.centerOn(octopus.head.position.x, octopus.head.position.y);
 
   graphics.clear();
-  graphics.fillStyle(0x202020);
-  graphics.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
-  graphics.fillStyle(0x000000);
-  graphics.fillRect(block.x - block.width / 2.0, block.y - block.height / 2.0, block.width, block.height);
+  world.render(graphics);
   octopus.render(graphics);
 }
