@@ -88,6 +88,8 @@ function update(time: number, delta: number) {
   // @ts-ignore: Argument of type 'MatterJS.World' is not assignable ...
   octopus.update(time, delta, scene.matter.world.localWorld);
 
+  scene.cameras.main.centerOn(octopus.head.position.x, octopus.head.position.y);
+
   graphics.clear();
   graphics.fillStyle(0x202020);
   graphics.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
