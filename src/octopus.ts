@@ -238,9 +238,12 @@ export class Octopus {
     return Matter.Query.region(relevantBodies, reachBody.bounds);
   }
 
+  isGrounded(): boolean {
+    return this.arms.some(arm => !(arm.stopped));
+  }
+
   jump(toward: Matter.Vector) {
-    const grounded = this.arms.some(arm => !(arm.stopped));
-    if (grounded && this.jumpCooldown <= 0) {
+    if (this.isGrounded() && this.jumpCooldown <= 0) {
       this.jumpCooldown = jumpLength;
       this.arms.forEach(arm => arm.stop());
 
@@ -250,11 +253,43 @@ export class Octopus {
     }
   }
 
+  moveArm(reachable: Matter.Body[], toMove: Arm, tries: number) {
+    const start = this.head.position;
+    const angles = _.times(tries, () => random.weighted(-Math.PI/2, Math.PI/2));
+
+    const points = angles.map(angle => {
+      const v1 = Matter.Vector.sub(this.goal, start);
+      const v2 = Matter.Vector.rotate(v1, angle);
+      const end2 = Matter.Vector.add(start, v2);
+
+      const ray = Matter.Query.ray(reachable, start, end2);
+      const cast = raycast(ray.map(obj => obj.body), start, end2);
+      return cast.map(raycol => raycol.point)[0];
+    }).filter(point => {
+      if (!point) {
+        return false;
+      }
+      const dist = Matter.Vector.magnitude(Matter.Vector.sub(point, start));
+      if (dist > this.reach) {
+        return false;
+      }
+      return true;
+    });
+    if (points.length > 0) {
+      const point = points.reduce((acc, cur) => {
+        const d1 = Matter.Vector.magnitude(Matter.Vector.sub(acc, this.goal));
+        const d2 = Matter.Vector.magnitude(Matter.Vector.sub(cur, this.goal));
+        return d2 < d1 ? cur : acc;
+      }, points[0]);
+      toMove.move(point);
+    }
+  }
+
   update(time: number, delta: number, world: Matter.World) {
     this.cooldown = Math.max(0, this.cooldown - delta);
     this.jumpCooldown = Math.max(0, this.jumpCooldown - delta);
 
-    if (this.goal) {
+    if (this.isGrounded()) {
       const total = this.arms.reduce((acc, cur) => {
         return Matter.Vector.add(acc, cur.tipPosition());
       }, { x: 0, y: 0 });
@@ -269,44 +304,18 @@ export class Octopus {
       );
     }
 
-    if (this.goal && this.cooldown <= 0) {
-      this.cooldown = 100;
-      const bestArm = this.arms[this.armOrder[0]];
-      this.armOrder.shift();
-      if (this.armOrder.length == 0) {
-        this.replenishArmOrder();
-      }
-
-      const start = this.head.position;
-      const bodies = Matter.Composite.allBodies(world);
-      const reachable = this.maybeReachable(bodies);
-      const angles = _.times(100, () => random.weighted(-Math.PI/2, Math.PI/2));
-
-      const points = angles.map(angle => {
-        const v1 = Matter.Vector.sub(this.goal, start);
-        const v2 = Matter.Vector.rotate(v1, angle);
-        const end2 = Matter.Vector.add(start, v2);
-
-        const ray = Matter.Query.ray(reachable, start, end2);
-        const cast = raycast(ray.map(obj => obj.body), start, end2);
-        return cast.map(raycol => raycol.point)[0];
-      }).filter(point => {
-        if (!point) {
-          return false;
+    const bodies = Matter.Composite.allBodies(world);
+    const reachable = this.maybeReachable(bodies);
+    if (this.goal) {
+      this.arms.filter(arm => arm.stopped).forEach(arm => this.moveArm(reachable, arm, 1));
+      if (this.cooldown <= 0) {
+        this.cooldown = 100;
+        const bestArm = this.arms[this.armOrder[0]];
+        this.armOrder.shift();
+        if (this.armOrder.length == 0) {
+          this.replenishArmOrder();
         }
-        const dist = Matter.Vector.magnitude(Matter.Vector.sub(point, start));
-        if (dist > this.reach) {
-          return false;
-        }
-        return true;
-      });
-      if (points.length > 0) {
-        const point = points.reduce((acc, cur) => {
-          const d1 = Matter.Vector.magnitude(Matter.Vector.sub(acc, this.goal));
-          const d2 = Matter.Vector.magnitude(Matter.Vector.sub(cur, this.goal));
-          return d2 < d1 ? cur : acc;
-        }, points[0]);
-        bestArm.move(point);
+        this.moveArm(reachable, bestArm, 100);
       }
     }
 
