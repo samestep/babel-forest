@@ -20,8 +20,6 @@ export class World {
   query(col: number, row: number): boolean {
     if (col === 0 && row === 0) {
       return false;
-    } else if (row >= 1) {
-      return true;
     } else {
       const rng = seedrandom(`${col},${row}`);
       return rng.int32() % 2 === 1;
