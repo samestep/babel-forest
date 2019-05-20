@@ -112,7 +112,11 @@ export class World {
     return rects;
   }
 
-  update(worldView: Phaser.Geom.Rectangle) {
+  update(
+    worldView: Phaser.Geom.Rectangle,
+    makeGraphics: () => Phaser.GameObjects.Graphics,
+    destroyTexture: (key: string) => void,
+  ) {
     const corner1 = { x: worldView.left, y: worldView.top };
     const corner2 = { x: worldView.right, y: worldView.bottom };
     const [tileCorner1, tileCorner2] = [corner1, corner2].map(corner => {
@@ -132,6 +136,8 @@ export class World {
         if (room.door) { bodies.push(room.door); }
         bodies.forEach(body => Matter.Composite.remove(this.comp, body));
         this.rooms.delete(key);
+
+        destroyTexture(JSON.stringify(key));
       }
     });
 
@@ -148,23 +154,44 @@ export class World {
           });
           // @ts-ignore: Argument of type 'Dictionary<Body>' is not ...
           this.rooms.set([col, row], room);
+
+          const tg = makeGraphics();
+          tg.fillStyle(0x606060);
+          tg.fillEllipse(
+            this.config.wallThickness + this.config.roomWidth/2,
+            this.config.ceilThickness + this.config.roomHeight/2,
+            this.config.roomWidth,
+            this.config.roomHeight,
+          );
+          tg.generateTexture(
+            JSON.stringify([col, row]),
+            this.config.wallThickness + this.config.roomWidth,
+            this.config.ceilThickness + this.config.roomHeight,
+          );
+          tg.destroy();
         }
       }
     }
   }
 
   render(graphics: Phaser.GameObjects.Graphics) {
-    graphics.fillStyle(0x000000);
     this.rooms.keys().forEach(([col, row]) => {
-      if (row > 0) {
-        const { x, y } = this.roomCenter(col, row);
-        graphics.fillRect(
-          x - this.config.roomWidth / 2 - this.config.wallThickness,
-          y - this.config.roomHeight / 2 - this.config.ceilThickness,
-          this.config.wallThickness + this.config.roomWidth,
-          this.config.ceilThickness + this.config.roomHeight,
-        );
+      const { x, y } = this.roomCenter(col, row);
+      if (row <= 0) {
+        graphics.fillStyle(0xffffff);
+        graphics.setTexture(JSON.stringify([col, row]));
       } else {
+        graphics.fillStyle(0x000000);
+      }
+      graphics.fillRect(
+        x - this.config.roomWidth / 2 - this.config.wallThickness,
+        y - this.config.roomHeight / 2 - this.config.ceilThickness,
+        this.config.wallThickness + this.config.roomWidth,
+        this.config.ceilThickness + this.config.roomHeight,
+      );
+      graphics.setTexture();
+      if (row <= 0) {
+        graphics.fillStyle(0x000000);
         _.values(this.rects(col, row)).forEach(rect => {
           graphics.fillRectShape(rect);
         });

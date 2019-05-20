@@ -105,7 +105,11 @@ function update(time: number, delta: number) {
     jump = false;
   }
 
-  world.update(scene.cameras.main.worldView);
+  world.update(
+    scene.cameras.main.worldView,
+    () => scene.add.graphics(),
+    key => scene.textures.remove(key),
+  );
   // @ts-ignore: Argument of type 'MatterJS.World' is not assignable ...
   octopus.update(time, delta, scene.matter.world.localWorld);
 
