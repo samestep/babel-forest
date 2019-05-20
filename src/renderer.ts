@@ -49,7 +49,14 @@ let jump = false;
 function create() {
   graphics = scene.add.graphics();
 
-  world = new World();
+  world = new World({
+    roomWidth: 200,
+    roomHeight: 200,
+    wallThickness: 25,
+    ceilThickness: 25,
+    ladderWidth: 75,
+    doorHeight: 75,
+  });
   scene.matter.world.add(world.comp);
 
   octopus = new Octopus({
