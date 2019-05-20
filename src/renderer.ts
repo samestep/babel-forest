@@ -80,6 +80,7 @@ function create() {
 
 function update(time: number, delta: number) {
   const movingDir = { x: octopus.head.position.x, y: octopus.head.position.y };
+  // TODO: change these values because I think the vector length does matter
   if (wDown) { movingDir.y -= 100; }
   if (aDown) { movingDir.x -= 100; }
   if (sDown) { movingDir.y += 100; }
