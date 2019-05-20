@@ -50,7 +50,7 @@ export class World {
     if (row === 1) {
       return { trap: true, door };
     } else if (row === 0) {
-      return { trap: false, door: false };
+      return { trap, door: false };
     } else {
       return { trap, door };
     }
