@@ -37,8 +37,12 @@ function fullSize(config: WorldConfig): [number, number] {
   return [config.wall + config.width, config.wall + worldHeight(config)];
 }
 
+function shelfWidth(config: WorldConfig): number {
+  return (config.width - config.trap)/2;
+}
+
 function ceilPartWidth(config: WorldConfig): number {
-  return (config.width - config.trap)/2 + config.wall;
+  return shelfWidth(config) + config.wall;
 }
 
 function worldDoor(config: WorldConfig): number {
@@ -48,6 +52,10 @@ function worldDoor(config: WorldConfig): number {
 function wallPartHeight(config: WorldConfig): number {
   return config.wall + worldHeight(config) - worldDoor(config);
 }
+
+const wallColor = 0x5c4019;
+const ladderColor = 0xa88a62;
+const shelfColor = 0xa87632;
 
 export class World {
   config: WorldConfig;
@@ -131,7 +139,7 @@ export class World {
   drawRoom(col: number, row: number, graphics: Phaser.GameObjects.Graphics) {
     const { trap, door } = this.query(col, row);
 
-    graphics.fillStyle(0x303030);
+    graphics.fillStyle(wallColor);
     if (!trap) {
       graphics.fillRect(
         ceilPartWidth(this.config), 0,
@@ -149,15 +157,31 @@ export class World {
       this.config.width, worldHeight(this.config),
     );
 
-    graphics.fillStyle(0x606060);
+    const trapBelow = this.query(col, row+1).trap;
+
     for (let i = 1; i < this.config.height; i++) {
+      const y = this.config.wall + i*(this.config.book + this.config.shelf) - this.config.shelf;
+      graphics.fillStyle(shelfColor);
       graphics.fillRect(
-        this.config.wall,
-        this.config.wall + i*(this.config.book + this.config.shelf) - this.config.shelf,
-        this.config.width, this.config.shelf,
+        this.config.wall, y,
+        shelfWidth(this.config), this.config.shelf,
+      );
+      graphics.fillRect(
+        this.config.wall + this.config.width - shelfWidth(this.config), y,
+        shelfWidth(this.config), this.config.shelf,
+      );
+      if (!trap || (!trapBelow && i >= this.config.height - 1)) {
+        graphics.fillStyle(ladderColor);
+      } else {
+        graphics.fillStyle(shelfColor);
+      }
+      graphics.fillRect(
+        ceilPartWidth(this.config), y,
+        this.config.trap, this.config.shelf,
       );
     }
 
+    graphics.fillStyle(ladderColor);
     if (!trap) {
       graphics.fillRect(
         this.config.wall + this.config.width/2 - this.config.trap/2,
@@ -167,7 +191,6 @@ export class World {
       );
     }
 
-    const trapBelow = this.query(col, row+1).trap;
     if (!(trap && trapBelow)) {
       let fullHeight: number;
       if (!trap) {
