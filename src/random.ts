@@ -1,4 +1,5 @@
 import * as seedrandom from 'seedrandom';
+import * as _ from 'underscore';
 
 import { rgbToHex } from './color';
 
@@ -18,4 +19,22 @@ export function color(sum: number, rng: seedrandom.prng): number {
   const g = Math.floor(rng()*(sum-r+1));
   const b = sum - r - g;
   return rgbToHex(r, g, b);
+}
+
+export function groupSize(max: number, rng: seedrandom.prng): number {
+  const pmf = new Map(_.times(max, i => {
+    const outcome = i + 1;
+    return [outcome, 1/(outcome*outcome)];
+  }));
+  const total = Array.from(pmf.values()).reduce((x, y) => x + y);
+  const choice = rng()*total;
+  let running = 0;
+  for (let i = 1; i <= max; ++i) {
+    const next = running + pmf.get(i);
+    if (choice < next) {
+      return i;
+    }
+    running = next;
+  }
+  return 1;
 }

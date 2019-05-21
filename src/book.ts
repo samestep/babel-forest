@@ -22,8 +22,7 @@ function generateBooks(
   const books = [];
   let pos = 0;
   while (true) {
-    // TODO; skew groupSize toward 1
-    const groupSize = Math.floor(rng()*maxGroup)+1;
+    const groupSize = random.groupSize(maxGroup, rng);
     const width = minWidth+Math.floor(rng()*(maxWidth-minWidth+1));
     if (pos + groupSize*width > rect.width) {
       break;
