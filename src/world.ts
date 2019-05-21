@@ -8,6 +8,7 @@ import * as seedrandom from 'seedrandom';
 import * as _ from 'underscore';
 
 import { JSONMap } from './map';
+import { drawBooks } from './book';
 
 interface WorldConfig {
   book: number; // the height of the gap between bookshelves
@@ -136,15 +137,6 @@ export class World {
     return rects;
   }
 
-  drawBooks(
-    rect: Phaser.Geom.Rectangle,
-    graphics: Phaser.GameObjects.Graphics,
-    rng: seedrandom.prng,
-  ) {
-    graphics.fillStyle(0x0000ff);
-    graphics.fillRectShape(rect);
-  }
-
   drawRoom(col: number, row: number, graphics: Phaser.GameObjects.Graphics) {
     const { trap, door } = this.query(col, row);
 
@@ -180,7 +172,7 @@ export class World {
         shelfWidth(this.config), this.config.shelf,
       );
       if (!trap || (!trapBelow && i >= this.config.height - 1)) {
-        this.drawBooks(
+        drawBooks(
           new Phaser.Geom.Rectangle(
             this.config.wall, y - this.config.book,
             shelfWidth(this.config), this.config.book,
@@ -188,7 +180,7 @@ export class World {
           graphics,
           seedrandom(JSON.stringify([col, row, i, 'left'])),
         );
-        this.drawBooks(
+        drawBooks(
           new Phaser.Geom.Rectangle(
             this.config.wall + this.config.width - shelfWidth(this.config), y - this.config.book,
             shelfWidth(this.config), this.config.book,
@@ -198,7 +190,7 @@ export class World {
         );
         graphics.fillStyle(ladderColor);
       } else {
-        this.drawBooks(
+        drawBooks(
           new Phaser.Geom.Rectangle(
             this.config.wall, y - this.config.book,
             this.config.width, this.config.book,
