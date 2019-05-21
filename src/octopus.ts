@@ -20,6 +20,21 @@ function bodyToWorld(body: Matter.Body, point: Matter.Vector): Matter.Vector {
   );
 }
 
+interface CollisionFilter {
+  group: number;
+  category: number;
+  mask: number;
+}
+
+interface ArmConfig {
+  x: number;
+  y: number;
+  numSegments: number;
+  segmentLength: number;
+  segmentRadius: number;
+  collisionFilter: CollisionFilter;
+}
+
 class Arm {
   segmentLength: number;
   segmentRadius: number;
@@ -29,7 +44,7 @@ class Arm {
   spring: Matter.Constraint;
   stopped: boolean;
 
-  constructor(config) {
+  constructor(config: ArmConfig) {
     this.comp = Matter.Composite.create();
 
     const {
@@ -137,6 +152,16 @@ class Arm {
 // in ms
 const jumpLength = 1000;
 
+interface OctopusConfig {
+  x: number;
+  y: number;
+  headRadius: number;
+  numArms: number;
+  segmentLength: number;
+  segmentRadius: number;
+  segmentsPerArm: number;
+}
+
 export class Octopus {
   headRadius: number;
   reach: number;
@@ -151,7 +176,7 @@ export class Octopus {
   jumpDirection: Matter.Vector;
   armOrder: number[];
 
-  constructor(config) {
+  constructor(config: OctopusConfig) {
     this.comp = Matter.Composite.create();
 
     const {
