@@ -6,7 +6,6 @@ import { Octopus } from './octopus';
 import { World } from './world';
 
 const config = {
-  backgroundColor: '#303030',
   physics: {
     default: 'matter',
   },
@@ -50,12 +49,14 @@ function create() {
   graphics = scene.add.graphics();
 
   world = new World({
-    roomWidth: 200,
-    roomHeight: 200,
-    wallThickness: 25,
-    ceilThickness: 25,
-    ladderWidth: 75,
-    doorHeight: 75,
+    book: 50,
+    door: 2,
+    gap: 50,
+    height: 5,
+    shelf: 5,
+    trap: 75,
+    wall: 25,
+    width: 270,
   });
   scene.matter.world.add(world.comp);
 

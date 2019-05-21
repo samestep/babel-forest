@@ -10,29 +10,49 @@ import * as _ from 'underscore';
 import { JSONMap } from './map';
 
 interface WorldConfig {
-  roomWidth: number;
-  roomHeight: number;
-
-  wallThickness: number;
-  ceilThickness: number;
-
-  ladderWidth: number;
-  doorHeight: number;
+  book: number; // the height of the gap between bookshelves
+  door: number; // the height of doors (expressed as number of bookshelves)
+  gap: number; // the gap between the two poles of a ladder
+  height: number; // the height of the room (expressed as number of bookshelves)
+  shelf: number; // the thickness of the bookshelves and ladder parts
+  trap: number; // the width of the  opening in the ceiling for the ladder
+  wall: number; // the thickness of the walls, ceilings, and floors
+  width: number; // the width of the room
 }
 
-interface Room<T> {
-  ceilLeft: T;
-  ceilRight: T;
-  wallLeft: T;
+function worldHeight(config: WorldConfig): number {
+  return config.height * (config.book + config.shelf) - config.shelf;
+}
 
-  trap?: T; // in ceiling
-  door?: T; // in left wall
+function innerCorner(config: WorldConfig): [number, number] {
+  return [-config.width/2, -worldHeight(config)/2];
+}
+
+function outerCorner(config: WorldConfig): [number, number] {
+  const [x, y] = innerCorner(config);
+  return [x - config.wall, y - config.wall];
+}
+
+function fullSize(config: WorldConfig): [number, number] {
+  return [config.wall + config.width, config.wall + worldHeight(config)];
+}
+
+function ceilPartWidth(config: WorldConfig): number {
+  return (config.width - config.trap)/2 + config.wall;
+}
+
+function worldDoor(config: WorldConfig): number {
+  return config.door * (config.book + config.shelf) - config.shelf;
+}
+
+function wallPartHeight(config: WorldConfig): number {
+  return config.wall + worldHeight(config) - worldDoor(config);
 }
 
 export class World {
   config: WorldConfig;
   comp: Matter.Composite;
-  rooms: JSONMap<[number, number], Room<Matter.Body>>;
+  rooms: JSONMap<[number, number], Matter.Body[]>;
 
   constructor(config: WorldConfig) {
     this.config = config;
@@ -57,59 +77,115 @@ export class World {
   }
 
   closestRoom(v: Matter.Vector): [number, number] {
-    const x = v.x / (this.config.roomWidth + this.config.wallThickness);
-    const y = v.y / (this.config.roomHeight + this.config.ceilThickness);
-    return [Math.round(x), Math.round(y)];
+    const [w, h] = fullSize(this.config);
+    return [Math.round(v.x / w), Math.round(v.y / h)];
   }
 
   roomCenter(col: number, row: number): Matter.Vector {
-    const x = col * (this.config.roomWidth + this.config.wallThickness);
-    const y = row * (this.config.roomHeight + this.config.ceilThickness);
-    return { x, y };
+    const [w, h] = fullSize(this.config);
+    return { x: col*w, y: row*h };
   }
 
-  rects(col: number, row: number): Room<Phaser.Geom.Rectangle> {
+  rects(col: number, row: number): Phaser.Geom.Rectangle[] {
     const { trap, door } = this.query(col, row);
     const { x, y } = this.roomCenter(col, row);
-    const ceilPartWidth = (this.config.roomWidth - this.config.ladderWidth)/2 + this.config.wallThickness;
-    const wallPartHeight = this.config.roomHeight - this.config.doorHeight + this.config.ceilThickness;
-    const rects: Room<Phaser.Geom.Rectangle> = {
-      ceilLeft: new Phaser.Geom.Rectangle(
-        x - this.config.roomWidth/2 - this.config.wallThickness,
-        y - this.config.roomHeight/2 - this.config.ceilThickness,
-        ceilPartWidth,
-        this.config.ceilThickness,
+    const [outerX, outerY] = outerCorner(this.config);
+
+    if (row > 0) {
+      const [width, height] = fullSize(this.config)
+      return [new Phaser.Geom.Rectangle(x + outerX, y + outerY, width, height)];
+    }
+
+    const rects = [
+      // left ceiling
+      new Phaser.Geom.Rectangle(
+        x + outerX, y + outerY,
+        ceilPartWidth(this.config), this.config.wall,
       ),
-      ceilRight: new Phaser.Geom.Rectangle(
-        x + this.config.ladderWidth/2,
-        y - this.config.roomHeight/2 - this.config.ceilThickness,
-        ceilPartWidth,
-        this.config.ceilThickness,
+      // right ceiling
+      new Phaser.Geom.Rectangle(
+        x + this.config.trap/2, y + outerY,
+        ceilPartWidth(this.config), this.config.wall,
       ),
-      wallLeft: new Phaser.Geom.Rectangle(
-        x - this.config.roomWidth/2 - this.config.wallThickness,
-        y - this.config.roomHeight/2 - this.config.ceilThickness,
-        this.config.wallThickness,
-        wallPartHeight,
+      // left wall part
+      new Phaser.Geom.Rectangle(
+        x + outerX, y + outerY,
+        this.config.wall, wallPartHeight(this.config),
       ),
-    };
+    ];
     if (trap) {
-      rects.trap = new Phaser.Geom.Rectangle(
-        x - this.config.ladderWidth/2,
-        y - this.config.roomHeight/2 - this.config.ceilThickness,
-        this.config.ladderWidth,
-        this.config.ceilThickness,
-      );
+      rects.push(new Phaser.Geom.Rectangle(
+        x - this.config.trap/2, y + outerY,
+        this.config.trap, this.config.wall,
+      ));
     }
     if (door) {
-      rects.door = new Phaser.Geom.Rectangle(
-        x - this.config.roomWidth/2 - this.config.wallThickness,
-        y + this.config.roomHeight/2 - this.config.doorHeight,
-        this.config.wallThickness,
-        this.config.doorHeight,
-      );
+      rects.push(new Phaser.Geom.Rectangle(
+        x + outerX, y + worldHeight(this.config)/2 - worldDoor(this.config),
+        this.config.wall, worldDoor(this.config),
+      ));
     }
     return rects;
+  }
+
+  drawRoom(col: number, row: number, graphics: Phaser.GameObjects.Graphics) {
+    const { trap, door } = this.query(col, row);
+
+    graphics.fillStyle(0x303030);
+    if (!trap) {
+      graphics.fillRect(
+        ceilPartWidth(this.config), 0,
+        this.config.trap, this.config.wall,
+      );
+    }
+    if (!door) {
+      graphics.fillRect(
+        0, wallPartHeight(this.config),
+        this.config.wall, worldDoor(this.config),
+      );
+    }
+    graphics.fillRect(
+      this.config.wall, this.config.wall,
+      this.config.width, worldHeight(this.config),
+    );
+
+    graphics.fillStyle(0x606060);
+    for (let i = 1; i < this.config.height; i++) {
+      graphics.fillRect(
+        this.config.wall,
+        this.config.wall + i*(this.config.book + this.config.shelf) - this.config.shelf,
+        this.config.width, this.config.shelf,
+      );
+    }
+
+    if (!trap) {
+      graphics.fillRect(
+        this.config.wall + this.config.width/2 - this.config.trap/2,
+        this.config.wall/2 - this.config.shelf/2,
+        this.config.trap,
+        this.config.shelf,
+      );
+    }
+
+    const trapBelow = this.query(col, row+1).trap;
+    if (!(trap && trapBelow)) {
+      let fullHeight: number;
+      if (!trap) {
+        fullHeight = fullSize(this.config)[1];
+      } else {
+        fullHeight = 1.5*this.config.book + this.config.shelf;
+      }
+      graphics.fillRect(
+        this.config.wall + this.config.width/2 - this.config.gap/2,
+        this.config.wall + worldHeight(this.config) - fullHeight,
+        this.config.shelf, fullHeight,
+      );
+      graphics.fillRect(
+        this.config.wall + this.config.width/2 + this.config.gap/2 - this.config.shelf,
+        this.config.wall + worldHeight(this.config) - fullHeight,
+        this.config.shelf, fullHeight,
+      );
+    }
   }
 
   update(
@@ -131,10 +207,7 @@ export class World {
     this.rooms.forEach((key, room) => {
       const [x, y] = key;
       if (x < colMin || colMax < x || y < rowMin || rowMax < y) {
-        const bodies = [room.ceilLeft, room.ceilRight, room.wallLeft];
-        if (room.trap) { bodies.push(room.trap); }
-        if (room.door) { bodies.push(room.door); }
-        bodies.forEach(body => Matter.Composite.remove(this.comp, body));
+        room.forEach(body => Matter.Composite.remove(this.comp, body));
         this.rooms.delete(key);
 
         destroyTexture(JSON.stringify(key));
@@ -144,7 +217,7 @@ export class World {
     for (let col = colMin; col <= colMax; col++) {
       for (let row = rowMin; row <= rowMax; row++) {
         if (this.query(col, row) && !(this.rooms.has([col, row]))) {
-          const room = _.mapObject(this.rects(col, row), (rect) => {
+          const room = this.rects(col, row).map(rect => {
             const body =  Matter.Bodies.rectangle(
               rect.centerX, rect.centerY, rect.width, rect.height,
               { isStatic: true },
@@ -152,23 +225,13 @@ export class World {
             Matter.Composite.add(this.comp, body);
             return body;
           });
-          // @ts-ignore: Argument of type 'Dictionary<Body>' is not ...
           this.rooms.set([col, row], room);
 
-          const tg = makeGraphics();
-          tg.fillStyle(0x606060);
-          tg.fillEllipse(
-            this.config.wallThickness + this.config.roomWidth/2,
-            this.config.ceilThickness + this.config.roomHeight/2,
-            this.config.roomWidth,
-            this.config.roomHeight,
-          );
-          tg.generateTexture(
-            JSON.stringify([col, row]),
-            this.config.wallThickness + this.config.roomWidth,
-            this.config.ceilThickness + this.config.roomHeight,
-          );
-          tg.destroy();
+          const [w, h] = fullSize(this.config)
+          const g = makeGraphics();
+          this.drawRoom(col, row, g);
+          g.generateTexture(JSON.stringify([col, row]), w, h);
+          g.destroy();
         }
       }
     }
@@ -176,25 +239,14 @@ export class World {
 
   render(graphics: Phaser.GameObjects.Graphics) {
     this.rooms.keys().forEach(([col, row]) => {
-      const { x, y } = this.roomCenter(col, row);
       if (row <= 0) {
+        const { x, y } = this.roomCenter(col, row);
+        const [outerX, outerY] = outerCorner(this.config);
+        const [width, height] = fullSize(this.config);
         graphics.fillStyle(0xffffff);
         graphics.setTexture(JSON.stringify([col, row]));
-      } else {
-        graphics.fillStyle(0x000000);
-      }
-      graphics.fillRect(
-        x - this.config.roomWidth / 2 - this.config.wallThickness,
-        y - this.config.roomHeight / 2 - this.config.ceilThickness,
-        this.config.wallThickness + this.config.roomWidth,
-        this.config.ceilThickness + this.config.roomHeight,
-      );
-      graphics.setTexture();
-      if (row <= 0) {
-        graphics.fillStyle(0x000000);
-        _.values(this.rects(col, row)).forEach(rect => {
-          graphics.fillRectShape(rect);
-        });
+        graphics.fillRect(x + outerX, y + outerY, width, height);
+        graphics.setTexture();
       }
     });
   }
