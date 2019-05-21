@@ -118,7 +118,6 @@ function update(time: number, delta: number) {
     () => scene.add.graphics(),
     key => scene.textures.remove(key),
   );
-  hud.update(scene.cameras.main.worldView);
 
   graphics.clear();
   world.render(graphics);
