@@ -18,8 +18,25 @@ const maxGroup = 5;
 function generateBooks(
   rect: Phaser.Geom.Rectangle, rng: seedrandom.prng
 ): Book[] {
-  // TODO: multiple books
-  return [{ rect, color: random.color(0x80, rng) }];
+  const books = [];
+  let pos = 0;
+  while (true) {
+    const groupSize = Math.floor(rng()*maxGroup)+1;
+    const width = minWidth+Math.floor(rng()*(maxWidth-minWidth+1));
+    if (pos + groupSize*width > rect.width) {
+      break;
+    }
+    const height = rect.height*(minHeight+rng()*(maxHeight-minHeight));
+    books.push({
+      rect: new Phaser.Geom.Rectangle(
+        rect.left + pos, rect.bottom - height,
+        width*groupSize, height,
+      ),
+      color: random.color(0x80, rng),
+    });
+    pos += groupSize*width;
+  }
+  return books;
 }
 
 export function drawBooks(
