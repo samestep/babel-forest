@@ -36,6 +36,8 @@ function generateBooks(
     });
     pos += groupSize*width;
   }
+  const shift = (rect.width - pos)/2;
+  books.forEach(book => { book.rect.x += shift; });
   return books;
 }
 
