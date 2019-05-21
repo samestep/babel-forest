@@ -2,6 +2,8 @@
 
 import * as seedrandom from 'seedrandom';
 
+import * as random from './random';
+
 interface Book {
   rect: Phaser.Geom.Rectangle,
   color: number;
@@ -16,8 +18,8 @@ const maxGroup = 5;
 function generateBooks(
   rect: Phaser.Geom.Rectangle, rng: seedrandom.prng
 ): Book[] {
-  // TODO: actually implement this
-  return [{ rect, color: 0x000080 }];
+  // TODO: multiple books
+  return [{ rect, color: random.color(0x80, rng) }];
 }
 
 export function drawBooks(
