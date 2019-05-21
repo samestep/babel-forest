@@ -2,6 +2,7 @@
 
 import * as _ from 'underscore';
 
+import { HUD } from './hud';
 import { Octopus } from './octopus';
 import { World } from './world';
 
@@ -37,6 +38,7 @@ function preload() {
 }
 
 let graphics: Phaser.GameObjects.Graphics;
+let hud: HUD;
 let world: World;
 let octopus: Octopus;
 let wDown = false;
@@ -84,6 +86,8 @@ function create() {
   a.on('up', () => { aDown = false; });
   s.on('up', () => { sDown = false; });
   d.on('up', () => { dDown = false; });
+
+  hud = new HUD(scene);
 }
 
 function update(time: number, delta: number) {
@@ -106,15 +110,15 @@ function update(time: number, delta: number) {
     jump = false;
   }
 
+  // @ts-ignore: Argument of type 'MatterJS.World' is not assignable ...
+  octopus.update(time, delta, scene.matter.world.localWorld);
+  scene.cameras.main.centerOn(octopus.head.position.x, octopus.head.position.y);
   world.update(
     scene.cameras.main.worldView,
     () => scene.add.graphics(),
     key => scene.textures.remove(key),
   );
-  // @ts-ignore: Argument of type 'MatterJS.World' is not assignable ...
-  octopus.update(time, delta, scene.matter.world.localWorld);
-
-  scene.cameras.main.centerOn(octopus.head.position.x, octopus.head.position.y);
+  hud.update(scene.cameras.main.worldView);
 
   graphics.clear();
   world.render(graphics);
