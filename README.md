@@ -1,5 +1,4 @@
-Babel Forest
-============
+# Babel Forest [![Build Status](https://travis-ci.com/samestep/babel-forest.svg?branch=master)](https://travis-ci.com/samestep/babel-forest)
 
 Not to be confused with [this 2010 movie][forest of babel]. Install [Git] and
 [Yarn], then:
