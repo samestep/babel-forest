@@ -6,7 +6,7 @@ import * as random from './random';
 import { hexToRgb, rgbToHex } from './color';
 
 interface Book {
-  rect: Phaser.Geom.Rectangle,
+  rect: Phaser.Geom.Rectangle;
   color: number;
 }
 
