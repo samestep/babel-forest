@@ -7,7 +7,9 @@ node_js: '10'
 cache: yarn
 env:
   - YARN_GPG=no
-before_deploy: yarn build
+before_deploy:
+  - yarn build
+  - export TRAVIS_TAG=draft
 deploy:
   provider: releases
   api_key:
