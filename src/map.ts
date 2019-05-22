@@ -1,9 +1,11 @@
 export class JSONMap<K, V> {
   inner: Map<string, V>;
 
-  // not sure how to restrict the parameter type more
-  constructor(iterable?: any) {
-    this.inner = new Map(iterable);
+  // the original Map constructor takes any iterable, not just an array
+  constructor(iterable?: [K, V][]) {
+    this.inner = iterable
+      ? new Map(iterable.map(([k, v]) => [JSON.stringify(k), v]))
+      : new Map();
   }
 
   get size(): number {
