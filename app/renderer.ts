@@ -6,10 +6,8 @@ import { World } from './world';
 
 let scene: Phaser.Scene;
 
-window.addEventListener('resize', () => {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  scene.cameras.main.setSize(width, height);
+addEventListener('resize', () => {
+  scene.cameras.main.setSize(innerWidth, innerHeight);
 });
 
 function preload() {
@@ -119,4 +117,4 @@ const config = {
 
 const game = new Phaser.Game(config);
 
-window.addEventListener('beforeunload', () => game.destroy(true, true));
+addEventListener('beforeunload', () => game.destroy(true, true));
