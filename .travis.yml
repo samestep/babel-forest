@@ -7,3 +7,12 @@ node_js: '10'
 cache: yarn
 env:
   - YARN_GPG=no
+before_deploy: yarn build
+deploy:
+  provider: releases
+  api_key:
+    secure: Wi8O5dU5JG24Lzlp1OrTbHRI/kzf0PSfmFqcAwVBpygz6i58lkHttZ89szLnofjag4ibNKlKdBmIK+KBIkxJJknXNuhQKMcy4VcBBH2gWOiQB1AU+5AZ1E2pQkZ4srUJoBRWXuvc0qmn32aV5KADM8X2RmQxkjyy3f5lINC9n012FgRsxjXeVW17YIg54R0aJ0miGdWXr2CetHHIalxrlq4tC6VxghchgeegAhKmiAjwMbG/55IVp6gNQIxzxqr2vRSesRUUevP2S2ilItbKvkT7Qm0sPBOy340tpAqJoY3H9xdcWtRdi0zzaukxzVYObIs6B506B8mLeCs5NGWKMuu8UhVck8UEn5Hh/HsdW3uYL9t7m2kmjr6GPUnHsCmAltKG3BqUX5TAJ1SXfcDqIO268i1xQItxfhlTvp3IewG6uT8nBlRF7WNuR0jmNSCgT5Rx7G0WFI0d0xqwDzdPM+VnZHwc0aSDsZ6zfJJhOEdtm2mfB/3lZ42jr591XO5YOKlt6ketku3XCpEKCH2psRetdmIFP3KUvy/rFYwO4uFMtDwv5Pf4a+l1zOzWipIz+EOTziMsuI+mTtvZKrtC3HsmNjTDJvnvLEnnepxBk8RUOqgL6nPVl2paeQq4o5ceKsTVuFOcaUYRsO8YBvPBK39lRZ6VFCY+wbI1hPWZ6C8=
+  file_glob: true
+  file: out/make/*
+  skip_cleanup: true
+  draft: true

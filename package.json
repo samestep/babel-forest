@@ -7,11 +7,18 @@
   "license": "Unlicense",
   "main": "src/main.ts",
   "scripts": {
+    "build": "electron-forge make",
     "start": "electron-forge start",
     "test": "eslint src/*.ts"
   },
   "config": {
-    "forge": {}
+    "forge": {
+      "make_targets": {
+        "darwin": ["zip"],
+        "linux": ["zip"],
+        "win32": ["zip"]
+      }
+    }
   },
   "devDependencies": {
     "@types/matter-js": "^0.10.2",
