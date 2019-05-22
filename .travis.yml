@@ -13,35 +13,24 @@ deploy:
   - provider: pages
     skip_cleanup: true
     github_token:
-      secure: "fdN8Kdsqxv5pXmkxjByvO/umLO9nctkkd+NZuKfHKakdb/WS+BEZonL2+\
-               OEXpLovQhv9Qb3/mEcwCVrXUaUmq1csGEGoXjmdoiNNbBFQ6FJCAPjTnT\
-               Wvl9vSBYHXykZtWodWyRxqBeFI4XlqEoLPm3hiSspxHwvYdOoE/KrMAyw\
-               wTDqIKwK3FEZojbuAuKrDyPKsN1XFD1ZERRuQhjKo0jtDDsbILvZs8mf7\
-               gV5LbXT07ui1vAiFT0yShPoAn1GgYehOFmiqvCAL99aTVap9RxSRrIgUl\
-               4vem/gMak4biSUOoRuuT0FVt/ZvCyqh6RUo1iyvrDFXxIq5UVokonMuqU\
-               0bfJfbuLw5jPW3KDP1f0gS4Ifno9zEUmpXw1ennxgxXMOltGTGq9viSwx\
-               tE0E40WsV4RomEsMv7fd/vsgKNGPdQZ3fBDRq57O+zidIm/0cFU4M60Nr\
-               w3QyUboqOad+gcppoLK5rKagaWokvLGroAU25lS3YD6VyA7q/sjTg+V4i\
-               wRi5UKocXQt1uhLK9bmSzVthW2Cp2Nl+UjdI3QMSa/lSbqR9X0FxJTd1I\
-               QulTgf7Wut53IBk2xtDZMoNxUob7L6SDG07tkutNDL2kElccLrDkkdC46\
-               CIVInJimLaVfFYVoFyxtTbRaROUrIgplRyQcPWuqnyuDqKp1ajjgnub0="
+      secure: &token "fdN8Kdsqxv5pXmkxjByvO/umLO9nctkkd+NZuKfHKakdb/WS+BEZonL2+\
+                      OEXpLovQhv9Qb3/mEcwCVrXUaUmq1csGEGoXjmdoiNNbBFQ6FJCAPjTnT\
+                      Wvl9vSBYHXykZtWodWyRxqBeFI4XlqEoLPm3hiSspxHwvYdOoE/KrMAyw\
+                      wTDqIKwK3FEZojbuAuKrDyPKsN1XFD1ZERRuQhjKo0jtDDsbILvZs8mf7\
+                      gV5LbXT07ui1vAiFT0yShPoAn1GgYehOFmiqvCAL99aTVap9RxSRrIgUl\
+                      4vem/gMak4biSUOoRuuT0FVt/ZvCyqh6RUo1iyvrDFXxIq5UVokonMuqU\
+                      0bfJfbuLw5jPW3KDP1f0gS4Ifno9zEUmpXw1ennxgxXMOltGTGq9viSwx\
+                      tE0E40WsV4RomEsMv7fd/vsgKNGPdQZ3fBDRq57O+zidIm/0cFU4M60Nr\
+                      w3QyUboqOad+gcppoLK5rKagaWokvLGroAU25lS3YD6VyA7q/sjTg+V4i\
+                      wRi5UKocXQt1uhLK9bmSzVthW2Cp2Nl+UjdI3QMSa/lSbqR9X0FxJTd1I\
+                      QulTgf7Wut53IBk2xtDZMoNxUob7L6SDG07tkutNDL2kElccLrDkkdC46\
+                      CIVInJimLaVfFYVoFyxtTbRaROUrIgplRyQcPWuqnyuDqKp1ajjgnub0="
     local_dir: public
     on:
       condition: $TRAVIS_OS_NAME = linux
   - provider: releases
     api_key:
-      secure: "fdN8Kdsqxv5pXmkxjByvO/umLO9nctkkd+NZuKfHKakdb/WS+BEZonL2+\
-               OEXpLovQhv9Qb3/mEcwCVrXUaUmq1csGEGoXjmdoiNNbBFQ6FJCAPjTnT\
-               Wvl9vSBYHXykZtWodWyRxqBeFI4XlqEoLPm3hiSspxHwvYdOoE/KrMAyw\
-               wTDqIKwK3FEZojbuAuKrDyPKsN1XFD1ZERRuQhjKo0jtDDsbILvZs8mf7\
-               gV5LbXT07ui1vAiFT0yShPoAn1GgYehOFmiqvCAL99aTVap9RxSRrIgUl\
-               4vem/gMak4biSUOoRuuT0FVt/ZvCyqh6RUo1iyvrDFXxIq5UVokonMuqU\
-               0bfJfbuLw5jPW3KDP1f0gS4Ifno9zEUmpXw1ennxgxXMOltGTGq9viSwx\
-               tE0E40WsV4RomEsMv7fd/vsgKNGPdQZ3fBDRq57O+zidIm/0cFU4M60Nr\
-               w3QyUboqOad+gcppoLK5rKagaWokvLGroAU25lS3YD6VyA7q/sjTg+V4i\
-               wRi5UKocXQt1uhLK9bmSzVthW2Cp2Nl+UjdI3QMSa/lSbqR9X0FxJTd1I\
-               QulTgf7Wut53IBk2xtDZMoNxUob7L6SDG07tkutNDL2kElccLrDkkdC46\
-               CIVInJimLaVfFYVoFyxtTbRaROUrIgplRyQcPWuqnyuDqKp1ajjgnub0="
+      secure: *token
     file_glob: true
     file: out/make/*
     overwrite: true
