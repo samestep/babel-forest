@@ -6,8 +6,7 @@ language: node_js
 node_js: '10'
 cache: yarn
 env:
-  - TRAVIS_TAG=draft
-  - YARN_GPG=no
+  - TRAVIS_TAG=draft YARN_GPG=no
 before_deploy: yarn build
 deploy:
   provider: releases
