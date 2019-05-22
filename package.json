@@ -14,9 +14,15 @@
   "config": {
     "forge": {
       "make_targets": {
-        "darwin": ["zip"],
-        "linux": ["zip"],
-        "win32": ["zip"]
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "zip"
+        ],
+        "win32": [
+          "zip"
+        ]
       }
     }
   },
@@ -44,7 +50,10 @@
         "allowExpressions": true
       },
       "@typescript-eslint/explicit-member-accessibility": "off",
-      "@typescript-eslint/indent": ["error", 2],
+      "@typescript-eslint/indent": [
+        "error",
+        2
+      ],
       "@typescript-eslint/no-triple-slash-reference": "off"
     }
   }
