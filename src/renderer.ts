@@ -1,29 +1,8 @@
 /// <reference path="../node_modules/phaser/types/phaser.d.ts" />
 
-import * as _ from 'underscore';
-
 import { HUD } from './hud';
 import { Octopus } from './octopus';
 import { World } from './world';
-
-const config = {
-  physics: {
-    default: 'matter',
-  },
-  scene: {
-    preload: preload,
-    create: create,
-    update: update,
-  },
-  scale: {
-    parent: 'parent',
-    mode: Phaser.Scale.RESIZE,
-  },
-};
-
-const game = new Phaser.Game(config);
-
-window.addEventListener('beforeunload', () => game.destroy(true, true));
 
 let scene: Phaser.Scene;
 
@@ -38,7 +17,6 @@ function preload() {
 }
 
 let graphics: Phaser.GameObjects.Graphics;
-let hud: HUD;
 let world: World;
 let octopus: Octopus;
 let wDown = false;
@@ -87,7 +65,7 @@ function create() {
   s.on('up', () => { sDown = false; });
   d.on('up', () => { dDown = false; });
 
-  hud = new HUD(scene);
+  new HUD(scene);
 }
 
 function update(time: number, delta: number) {
@@ -123,3 +101,22 @@ function update(time: number, delta: number) {
   world.render(graphics);
   octopus.render(graphics);
 }
+
+const config = {
+  physics: {
+    default: 'matter',
+  },
+  scene: {
+    preload: preload,
+    create: create,
+    update: update,
+  },
+  scale: {
+    parent: 'parent',
+    mode: Phaser.Scale.RESIZE,
+  },
+};
+
+const game = new Phaser.Game(config);
+
+window.addEventListener('beforeunload', () => game.destroy(true, true));

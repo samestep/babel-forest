@@ -5,7 +5,6 @@ import * as MatterJS from 'matter-js';
 const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
 import * as seedrandom from 'seedrandom';
-import * as _ from 'underscore';
 
 import { JSONMap } from './map';
 import { drawBooks } from './book';
@@ -69,7 +68,7 @@ export class World {
     this.rooms = new JSONMap();
   }
 
-  query(col: number, row: number): { trap: boolean, door: boolean } {
+  query(col: number, row: number): { trap: boolean; door: boolean } {
     const rng = seedrandom(JSON.stringify([col, row]));
     let n = rng.int32();
     const trap = (n & 1) > 0;
