@@ -6,12 +6,20 @@ language: node_js
 node_js: '10'
 cache: yarn
 env: TRAVIS_TAG=draft YARN_GPG=no
-before_deploy: yarn build
+before_deploy:
+  - yarn pages
+  - yarn releases
 deploy:
-  provider: releases
-  api_key:
-    secure: fdN8Kdsqxv5pXmkxjByvO/umLO9nctkkd+NZuKfHKakdb/WS+BEZonL2+OEXpLovQhv9Qb3/mEcwCVrXUaUmq1csGEGoXjmdoiNNbBFQ6FJCAPjTnTWvl9vSBYHXykZtWodWyRxqBeFI4XlqEoLPm3hiSspxHwvYdOoE/KrMAywwTDqIKwK3FEZojbuAuKrDyPKsN1XFD1ZERRuQhjKo0jtDDsbILvZs8mf7gV5LbXT07ui1vAiFT0yShPoAn1GgYehOFmiqvCAL99aTVap9RxSRrIgUl4vem/gMak4biSUOoRuuT0FVt/ZvCyqh6RUo1iyvrDFXxIq5UVokonMuqU0bfJfbuLw5jPW3KDP1f0gS4Ifno9zEUmpXw1ennxgxXMOltGTGq9viSwxtE0E40WsV4RomEsMv7fd/vsgKNGPdQZ3fBDRq57O+zidIm/0cFU4M60Nrw3QyUboqOad+gcppoLK5rKagaWokvLGroAU25lS3YD6VyA7q/sjTg+V4iwRi5UKocXQt1uhLK9bmSzVthW2Cp2Nl+UjdI3QMSa/lSbqR9X0FxJTd1IQulTgf7Wut53IBk2xtDZMoNxUob7L6SDG07tkutNDL2kElccLrDkkdC46CIVInJimLaVfFYVoFyxtTbRaROUrIgplRyQcPWuqnyuDqKp1ajjgnub0=
-  file_glob: true
-  file: out/make/*
-  skip_cleanup: true
-  draft: true
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
+    local_dir: public
+    on:
+      os: linux
+  - provider: releases
+    api_key:
+      secure: fdN8Kdsqxv5pXmkxjByvO/umLO9nctkkd+NZuKfHKakdb/WS+BEZonL2+OEXpLovQhv9Qb3/mEcwCVrXUaUmq1csGEGoXjmdoiNNbBFQ6FJCAPjTnTWvl9vSBYHXykZtWodWyRxqBeFI4XlqEoLPm3hiSspxHwvYdOoE/KrMAywwTDqIKwK3FEZojbuAuKrDyPKsN1XFD1ZERRuQhjKo0jtDDsbILvZs8mf7gV5LbXT07ui1vAiFT0yShPoAn1GgYehOFmiqvCAL99aTVap9RxSRrIgUl4vem/gMak4biSUOoRuuT0FVt/ZvCyqh6RUo1iyvrDFXxIq5UVokonMuqU0bfJfbuLw5jPW3KDP1f0gS4Ifno9zEUmpXw1ennxgxXMOltGTGq9viSwxtE0E40WsV4RomEsMv7fd/vsgKNGPdQZ3fBDRq57O+zidIm/0cFU4M60Nrw3QyUboqOad+gcppoLK5rKagaWokvLGroAU25lS3YD6VyA7q/sjTg+V4iwRi5UKocXQt1uhLK9bmSzVthW2Cp2Nl+UjdI3QMSa/lSbqR9X0FxJTd1IQulTgf7Wut53IBk2xtDZMoNxUob7L6SDG07tkutNDL2kElccLrDkkdC46CIVInJimLaVfFYVoFyxtTbRaROUrIgplRyQcPWuqnyuDqKp1ajjgnub0=
+    file_glob: true
+    file: out/make/*
+    skip_cleanup: true
+    draft: true

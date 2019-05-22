@@ -5,11 +5,12 @@
   "repository": "https://github.com/samestep/babel-forest.git",
   "author": "Sam Estep",
   "license": "Unlicense",
-  "main": "src/main.ts",
+  "main": "app/main.ts",
   "scripts": {
-    "build": "electron-forge make",
+    "pages": "brunch build --production",
+    "releases": "electron-forge make",
     "start": "electron-forge start",
-    "test": "eslint src/*.ts"
+    "test": "eslint app/*.ts"
   },
   "config": {
     "forge": {
@@ -32,10 +33,12 @@
     "@types/underscore": "^1.8.18",
     "@typescript-eslint/eslint-plugin": "^1.9.0",
     "@typescript-eslint/parser": "^1.9.0",
+    "brunch": "^2.10.17",
     "electron-forge": "^5.2.4",
     "electron-prebuilt-compile": "4.0.0",
     "eslint": "^5.16.0",
-    "typescript": "^3.4.5"
+    "typescript": "^3.4.5",
+    "typescript-brunch": "^2.3.0"
   },
   "dependencies": {
     "electron-compile": "^6.4.4",
