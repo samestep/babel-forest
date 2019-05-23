@@ -66,6 +66,7 @@ export class MainScene extends Phaser.Scene {
           brightness: 1,
           delay: 500,
           duration: 1000,
+          onComplete: () => { this.events.emit('introduction'); },
         });
         this.matter.world.off('collisionstart', listener);
       }

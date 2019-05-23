@@ -1,36 +1,42 @@
 /// <reference path="../node_modules/phaser/types/phaser.d.ts" />
 
+import * as story from './story';
+import { Text } from './text';
+
 const delay = 100;
 
 export class HUD extends Phaser.Scene {
   cooldown: number;
-  text: Phaser.GameObjects.Text;
-  letters: string[];
-  running: string;
+  text: Text;
+  queue: string[];
 
   create() {
     addEventListener('resize', () => {
       this.cameras.main.setSize(innerWidth, innerHeight);
     });
 
-    this.running = '';
-    this.text = this.add.text(0, 0, this.running, {
+    this.text = new Text(this.add.text(10, 10, '', {
       fontFamily: 'sans',
-      fontSize: '100px',
-    });
+      fontSize: '50px',
+    }));
     this.cooldown = delay;
-    this.letters = 'Hello, world!'.split('');
-  }
 
-  update(time: number, delta: number) {
-    this.cooldown -= delta;
-    if (this.cooldown <= 0) {
-      this.cooldown = delay;
-      if (this.letters.length > 0) {
-        this.running += this.letters[0];
-        this.letters.shift();
-        this.text.setText(this.running);
+    this.queue = story.introduction;
+    const next = () => {
+      const line = this.queue.shift();
+      if (line) {
+        this.tweens.add(this.text.reveal(delay, line, () => {
+          this.time.addEvent({ delay: 250, callback: () => {
+            this.text.progress = 0;
+            this.time.addEvent({ delay: 250, callback: next });
+          } });
+        }));
       }
     }
+    this.scene.get('main').events.on('introduction', next);
+  }
+
+  update() {
+    this.text.update(this.cameras.main.worldView);
   }
 }
