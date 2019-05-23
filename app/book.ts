@@ -3,7 +3,7 @@
 import * as seedrandom from 'seedrandom';
 
 import * as random from './random';
-import { hexToRgb, rgbToHex } from './color';
+import { hexToRgb, rgbToHex, multiply } from './color';
 
 interface Book {
   rect: Phaser.Geom.Rectangle;
@@ -51,9 +51,8 @@ export function drawBooks(
   rng: seedrandom.prng,
 ) {
   generateBooks(rect, rng).forEach(book => {
-    const [r, g, b] = hexToRgb(book.color);
-    const dark = rgbToHex(Math.round(r*0.95), Math.round(g*0.95), Math.round(b*0.95));
-    const light = rgbToHex(Math.round(r*1.05), Math.round(g*1.05), Math.round(b*1.05));
+    const dark = multiply(book.color, 0.95);
+    const light = multiply(book.color, 1.05);
     graphics.fillStyle(dark);
     graphics.fillRect(book.rect.x, book.rect.y, book.rect.width/2, book.rect.height);
     graphics.fillStyle(light);
