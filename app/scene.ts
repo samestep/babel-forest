@@ -63,9 +63,15 @@ export class MainScene extends Phaser.Scene {
     a.on('up', () => { this.aDown = false; });
     s.on('up', () => { this.sDown = false; });
     d.on('up', () => { this.dDown = false; });
+
+    this.registry.values.reveal = 0;
   }
 
   update(time: number, delta: number) {
+    this.registry.values.reveal = Math.min(
+      1, this.registry.values.reveal + delta/1000
+    );
+
     const { progress } = this.registry.values.save;
     if (progress === 'library') {
       const movingDir = {
@@ -110,6 +116,6 @@ export class MainScene extends Phaser.Scene {
     if (progress === 'library') {
       this.world.render(this.graphics);
     }
-    this.octopus.render(this.graphics);
+    this.octopus.render(this.graphics, this.registry.values.reveal);
   }
 }

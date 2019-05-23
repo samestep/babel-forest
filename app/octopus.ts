@@ -6,6 +6,7 @@ const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
 import * as _ from 'underscore';
 
+import * as color from './color';
 import * as random from './random';
 import { raycast } from './raycast';
 
@@ -34,6 +35,8 @@ interface ArmConfig {
   segmentRadius: number;
   collisionFilter: CollisionFilter;
 }
+
+const orange = 0xffa500;
 
 class Arm {
   segmentLength: number;
@@ -133,14 +136,16 @@ class Arm {
     }
   }
 
-  render(graphics: Phaser.GameObjects.Graphics, center: Matter.Vector) {
+  render(
+    graphics: Phaser.GameObjects.Graphics, center: Matter.Vector, mult: number
+  ) {
     const vectors = this.segments.map((s, i) => this.segmentTip(i));
     const points = [center, ...vectors].map(({ x, y }) => {
       return new Phaser.Math.Vector2(x, y);
     });
     const spline = new Phaser.Curves.Spline(points);
 
-    graphics.lineStyle(this.segmentRadius * 2, 0xffa500);
+    graphics.lineStyle(this.segmentRadius * 2, color.multiply(orange, mult));
     spline.draw(graphics);
 
     vectors.forEach(({ x, y }) => {
@@ -355,13 +360,13 @@ export class Octopus {
     this.arms.forEach(arm => arm.update(this.head.position, this.reach));
   }
 
-  render(graphics: Phaser.GameObjects.Graphics) {
-    graphics.fillStyle(0xffa500);
-    this.arms.forEach(arm => arm.render(graphics, this.head.position));
+  render(graphics: Phaser.GameObjects.Graphics, mult: number) {
+    graphics.fillStyle(color.multiply(orange, mult));
+    this.arms.forEach(arm => arm.render(graphics, this.head.position, mult));
     const center = this.head.position;
     const radius = this.headRadius;
     graphics.fillCircle(center.x, center.y, radius);
-    graphics.fillStyle(0xffffff);
+    graphics.fillStyle(color.multiply(0xffffff, mult));
     graphics.fillEllipse(center.x - radius / 3.0, center.y, radius / 5.0, radius / 2.0);
     graphics.fillEllipse(center.x + radius / 3.0, center.y, radius / 5.0, radius / 2.0);
   }
