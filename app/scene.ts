@@ -53,25 +53,29 @@ export class MainScene extends Phaser.Scene {
     });
     this.matter.world.add(this.octopus.comp);
 
-    const listener = (
-      e: Phaser.Physics.Matter.Events.CollisionStartEvent,
-      a: Matter.Body, b: Matter.Body,
-    ) => {
-      const octobodies = Matter.Composite.allBodies(this.octopus.comp);
-      const hasHead = [a, b].some(body => body === this.octopus.head);
-      const hasWall = !([a, b].every(body => octobodies.includes(body)));
-      if (hasHead && hasWall) {
-        this.tweens.add({
-          targets: this.octopus,
-          brightness: 1,
-          delay: 500,
-          duration: 1000,
-          onComplete: () => { this.events.emit('introduction'); },
-        });
-        this.matter.world.off('collisionstart', listener);
-      }
-    };
-    this.matter.world.on('collisionstart', listener);
+    if (this.registry.values.save.progress === 'sleeping') {
+      const listener = (
+        e: Phaser.Physics.Matter.Events.CollisionStartEvent,
+        a: Matter.Body, b: Matter.Body,
+      ) => {
+        const octobodies = Matter.Composite.allBodies(this.octopus.comp);
+        const hasHead = [a, b].some(body => body === this.octopus.head);
+        const hasWall = !([a, b].every(body => octobodies.includes(body)));
+        if (hasHead && hasWall) {
+          this.tweens.add({
+            targets: this.octopus,
+            brightness: 1,
+            delay: 500,
+            duration: 1000,
+            onComplete: () => { this.events.emit('introduction'); },
+          });
+          this.matter.world.off('collisionstart', listener);
+        }
+      };
+      this.matter.world.on('collisionstart', listener);
+    } else {
+      this.octopus.brightness = 1;
+    }
 
     const spacebar = this.input.keyboard.addKey('SPACE');
     spacebar.on('down', () => { this.jump = true; });

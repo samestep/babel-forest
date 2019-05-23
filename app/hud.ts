@@ -31,6 +31,8 @@ export class HUD extends Phaser.Scene {
             this.time.addEvent({ delay: 250, callback: next });
           } });
         }));
+      } else {
+        this.registry.values.save.progress = 'library';
       }
     }
     this.scene.get('main').events.on('introduction', next);
