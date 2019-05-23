@@ -14,7 +14,10 @@ export class HUD extends Phaser.Scene {
     });
 
     this.running = '';
-    this.text = this.add.text(0, 0, this.running, { fontFamily: 'sans' });
+    this.text = this.add.text(0, 0, this.running, {
+      fontFamily: 'sans',
+      fontSize: '100px',
+    });
     this.cooldown = delay;
     this.letters = 'Hello, world!'.split('');
   }
