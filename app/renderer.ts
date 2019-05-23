@@ -10,17 +10,12 @@ const game = new Phaser.Game({
   scale: { mode: Phaser.Scale.RESIZE },
 });
 
-const state = loadGame();
+game.registry.values.save = loadGame();
 
 addEventListener('beforeunload', () => {
-  const scene = game.scene.getScene('main');
-  if (scene instanceof MainScene) { // should be always true
-    const { x, y } = scene.octopus.head.position;
-    state.location = [x, y];
-  }
-  saveGame(state);
+  saveGame(game.registry.values.save);
   game.destroy(true, true);
 });
 
-game.scene.add('main', MainScene, true, state.location);
+game.scene.add('main', MainScene, true);
 game.scene.add('hud', HUD, true);
