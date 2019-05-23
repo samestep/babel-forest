@@ -4,6 +4,7 @@ import { Octopus } from './octopus';
 import { World } from './world';
 
 export class MainScene extends Phaser.Scene {
+  startingPos: [number, number];
   graphics: Phaser.GameObjects.Graphics;
   world: World;
   octopus: Octopus;
@@ -12,6 +13,10 @@ export class MainScene extends Phaser.Scene {
   sDown: boolean;
   dDown: boolean;
   jump: boolean;
+
+  init(startingPos: [number, number]) {
+    this.startingPos = startingPos;
+  }
 
   create() {
     this.wDown = false;
@@ -38,8 +43,9 @@ export class MainScene extends Phaser.Scene {
     });
     this.matter.world.add(this.world.comp);
 
+    const [x, y] = this.startingPos;
     this.octopus = new Octopus({
-      x: 0, y: 0,
+      x, y,
       headRadius: 20,
       numArms: 8,
       segmentLength: 30,
