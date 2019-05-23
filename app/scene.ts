@@ -66,26 +66,29 @@ export class MainScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number) {
-    const movingDir = {
-      x: this.octopus.head.position.x,
-      y: this.octopus.head.position.y,
-    };
-    // TODO: change these values because I think the vector length does matter
-    if (this.wDown) { movingDir.y -= 100; }
-    if (this.aDown) { movingDir.x -= 100; }
-    if (this.sDown) { movingDir.y += 100; }
-    if (this.dDown) { movingDir.x += 100; }
-    if (this.wDown || this.aDown || this.sDown || this.dDown) {
-      this.octopus.goal = movingDir;
-    } else {
-      this.octopus.goal = null;
-    }
+    const { progress } = this.registry.values.save;
+    if (progress === 'library') {
+      const movingDir = {
+        x: this.octopus.head.position.x,
+        y: this.octopus.head.position.y,
+      };
+      // TODO: change these values because I think the vector length does matter
+      if (this.wDown) { movingDir.y -= 100; }
+      if (this.aDown) { movingDir.x -= 100; }
+      if (this.sDown) { movingDir.y += 100; }
+      if (this.dDown) { movingDir.x += 100; }
+      if (this.wDown || this.aDown || this.sDown || this.dDown) {
+        this.octopus.goal = movingDir;
+      } else {
+        this.octopus.goal = null;
+      }
 
-    if (this.jump) {
-      const pointer = this.input.activePointer;
-      const pointerLocation = { x: pointer.worldX, y: pointer.worldY };
-      this.octopus.jump(pointerLocation);
-      this.jump = false;
+      if (this.jump) {
+        const pointer = this.input.activePointer;
+        const pointerLocation = { x: pointer.worldX, y: pointer.worldY };
+        this.octopus.jump(pointerLocation);
+        this.jump = false;
+      }
     }
 
     // @ts-ignore: Argument of type 'MatterJS.World' is not assignable ...
@@ -104,7 +107,9 @@ export class MainScene extends Phaser.Scene {
     this.registry.values.save.location = [x, y];
 
     this.graphics.clear();
-    this.world.render(this.graphics);
+    if (progress === 'library') {
+      this.world.render(this.graphics);
+    }
     this.octopus.render(this.graphics);
   }
 }

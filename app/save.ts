@@ -1,14 +1,14 @@
 import * as t from 'io-ts';
 
 const Save = t.interface({
-  // progress: t.keyof({ sleeping: null, library: null }),
+  progress: t.keyof({ sleeping: null, library: null }),
   location: t.tuple([t.number, t.number]),
 });
 
 type Save = t.TypeOf<typeof Save>;
 
 const defaultSave: Save = {
-  // progress: 'sleeping',
+  progress: 'sleeping',
   location: [0, 0],
 };
 
