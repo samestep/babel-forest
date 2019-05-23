@@ -1,5 +1,9 @@
 /// <reference path="../node_modules/phaser/types/phaser.d.ts" />
 
+import * as MatterJS from 'matter-js';
+// @ts-ignore: Property 'Matter' does not exist on type 'typeof Matter'.
+const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
+
 import { Octopus } from './octopus';
 import { World } from './world';
 
@@ -49,6 +53,21 @@ export class MainScene extends Phaser.Scene {
     });
     this.matter.world.add(this.octopus.comp);
 
+    this.registry.values.startReveal = false;
+    const listener = (
+      e: Phaser.Physics.Matter.Events.CollisionStartEvent,
+      a: Matter.Body, b: Matter.Body,
+    ) => {
+      const octobodies = Matter.Composite.allBodies(this.octopus.comp);
+      const hasHead = [a, b].some(body => body === this.octopus.head);
+      const hasWall = !([a, b].every(body => octobodies.includes(body)));
+      if (hasHead && hasWall) {
+        this.registry.values.startReveal = true;
+        this.matter.world.off('collisionstart', listener);
+      }
+    };
+    this.matter.world.on('collisionstart', listener);
+
     const spacebar = this.input.keyboard.addKey('SPACE');
     spacebar.on('down', () => { this.jump = true; });
 
@@ -68,9 +87,11 @@ export class MainScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number) {
-    this.registry.values.reveal = Math.min(
-      1, this.registry.values.reveal + delta/1000
-    );
+    if (this.registry.values.startReveal) {
+      this.registry.values.reveal = Math.min(
+        1, this.registry.values.reveal + delta/1000
+      );
+    }
 
     const { progress } = this.registry.values.save;
     if (progress === 'library') {
