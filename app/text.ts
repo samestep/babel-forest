@@ -12,7 +12,8 @@ export class Text {
     this.progCounter = 0;
   }
 
-  reveal(delay: number, line: string, onComplete: () => void): object {
+  reveal(delay: number, color: string, line: string, onComplete: () => void): object {
+    this.inner.setColor(color);
     this.line = line;
     this.progress = 0;
     return {

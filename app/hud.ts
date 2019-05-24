@@ -9,7 +9,7 @@ const delay = 100;
 export class HUD extends Phaser.Scene {
   cooldown: number;
   text: Text;
-  queue: string[];
+  queue: [string, string][];
 
   create() {
     addEventListener('resize', () => {
@@ -25,17 +25,19 @@ export class HUD extends Phaser.Scene {
     this.sequence(story.introduction, 'introduction', 'library');
     this.sequence(story.library, 'library', 'move');
     this.sequence(story.move, 'move', 'waiting');
+    this.coloredSequence(story.book1, 'book1', 'getting1');
   }
 
   update() {
     this.text.update(this.cameras.main.worldView);
   }
 
-  sequence(lines: string[], event: string, progress: Progress) {
+  coloredSequence(lines: [string, string][], event: string, progress: Progress) {
     const next = () => {
-      const line = this.queue.shift();
-      if (line) {
-        this.tweens.add(this.text.reveal(delay, line, () => {
+      const cline = this.queue.shift();
+      if (cline) {
+        const [color, line] = cline;
+        this.tweens.add(this.text.reveal(delay, color, line, () => {
           this.time.addEvent({ delay: 250, callback: () => {
             this.text.progress = 0;
             this.time.addEvent({ delay: 250, callback: next });
@@ -51,5 +53,10 @@ export class HUD extends Phaser.Scene {
       this.queue = lines;
       next();
     });
+  }
+
+  sequence(lines: string[], event: string, progress: Progress) {
+    const coloredLines: [string, string][] = lines.map(line => ['white', line]);
+    this.coloredSequence(coloredLines, event, progress);
   }
 }

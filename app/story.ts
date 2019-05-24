@@ -26,3 +26,22 @@ export const move = [
   '(you always jump in the direction of your cursor)',
   '(👍)',
 ];
+
+export const book1: [string, string][] = [
+  ['white', 'Sweet, you have control over all your limbs!'],
+  ['red', 'Ahem.'],
+  ['white', 'Oh shoot what was that?'],
+  ['red', 'Hello Toothbrush.'],
+  ['white', "Phew, it's talking to someone else."],
+  ['red', 'I forget why I chose to name an octopus "Toothbrush", but whatevs.'],
+  ['white', "nani"],
+  ['red', 'Anyhow, I kidnapped you from your home'],
+  ['red', 'and teleported you into this infinite library'],
+  ['red', 'because I need an assistant.'],
+  ['red', 'You see, I have so many books.'],
+  ['red', "I don't have time to romp around in the library myself."],
+  ['red', 'I need someone to find them for me.'],
+  ['red', "That's where you come in."],
+  ['red', "Actually, I happen to need a book from that room you're in."],
+  ['red', 'That one on the top shelf, can you reach it for me?'],
+]

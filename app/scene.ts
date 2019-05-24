@@ -16,6 +16,7 @@ export class MainScene extends Phaser.Scene {
   sDown: boolean;
   dDown: boolean;
   jump: boolean;
+  waiting: boolean;
 
   create() {
     this.wDown = false;
@@ -23,6 +24,7 @@ export class MainScene extends Phaser.Scene {
     this.sDown = false;
     this.dDown = false;
     this.jump = false;
+    this.waiting = false;
 
     addEventListener('resize', () => {
       this.cameras.main.setSize(innerWidth, innerHeight);
@@ -74,21 +76,6 @@ export class MainScene extends Phaser.Scene {
         }
       };
       this.matter.world.on('collisionstart', listener);
-
-      this.scene.get('hud').events.on('hud-library', () => {
-        this.tweens.add({
-          targets: this.world,
-          darkness: 0,
-          duration: 1000,
-          onComplete: () => { this.events.emit('main-library'); },
-        });
-      });
-
-      this.scene.get('hud').events.on('hud-move', () => {
-        this.time.addEvent({ delay: 250, callback: () => {
-          this.events.emit('main-move');
-        } });
-      })
     } else {
       this.octopus.brightness = 1;
       this.world.darkness = 0;
@@ -100,7 +87,32 @@ export class MainScene extends Phaser.Scene {
         this.time.addEvent({ delay: 250, callback: () => {
           this.events.emit('main-move');
         } });
+      } else if (progress === 'book1') {
+        this.time.addEvent({ delay: 250, callback: () => {
+          this.events.emit('main-book1');
+        } });
       }
+    }
+
+    this.scene.get('hud').events.on('hud-library', () => {
+      this.tweens.add({
+        targets: this.world,
+        darkness: 0,
+        duration: 1000,
+        onComplete: () => { this.events.emit('main-library'); },
+      });
+    });
+
+    this.scene.get('hud').events.on('hud-move', () => {
+      this.time.addEvent({ delay: 250, callback: () => {
+        this.events.emit('main-move');
+      } });
+    });
+
+    const waitingF = () => { this.waiting = true; };
+    this.scene.get('hud').events.on('hud-waiting', waitingF);
+    if (progress === 'waiting') {
+      waitingF;
     }
 
     const spacebar = this.input.keyboard.addKey('SPACE');
@@ -140,6 +152,10 @@ export class MainScene extends Phaser.Scene {
       if (this.jump) {
         const pointer = this.input.activePointer;
         const pointerLocation = { x: pointer.worldX, y: pointer.worldY };
+        if (this.waiting && this.octopus.isGrounded()) {
+          this.waiting = false;
+          this.events.emit('main-book1');
+        }
         this.octopus.jump(pointerLocation);
         this.jump = false;
       }

@@ -5,6 +5,8 @@ const Progress = t.keyof({
   library: null,
   move: null,
   waiting: null,
+  book1: null,
+  getting1: null,
 });
 
 export type Progress = t.TypeOf<typeof Progress>;
