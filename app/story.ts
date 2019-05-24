@@ -44,4 +44,4 @@ export const book1: [string, string][] = [
   ['red', "That's where you come in."],
   ['red', "Actually, I happen to need a book from that room you're in."],
   ['red', 'That one on the top shelf, can you reach it for me?'],
-]
+];
