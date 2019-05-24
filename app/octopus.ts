@@ -9,6 +9,7 @@ import * as _ from 'underscore';
 import * as color from './color';
 import * as random from './random';
 import { raycast } from './raycast';
+import { Progress } from './save';
 
 function adjacents<T>(array: T[]): [T, T][] {
   return _.times(array.length - 1, i => [array[i], array[i + 1]]);
@@ -362,14 +363,19 @@ export class Octopus {
     this.arms.forEach(arm => arm.update(this.head.position, this.reach));
   }
 
-  render(graphics: Phaser.GameObjects.Graphics) {
+  render(graphics: Phaser.GameObjects.Graphics, progress: Progress) {
     graphics.fillStyle(color.multiply(orange, this.brightness));
     this.arms.forEach(arm => arm.render(graphics, this.head.position, this.brightness));
     const center = this.head.position;
     const radius = this.headRadius;
     graphics.fillCircle(center.x, center.y, radius);
     graphics.fillStyle(color.multiply(0xffffff, this.brightness));
-    graphics.fillEllipse(center.x - radius / 3.0, center.y, radius / 5.0, radius / 2.0);
-    graphics.fillEllipse(center.x + radius / 3.0, center.y, radius / 5.0, radius / 2.0);
+    if (progress === 'sleeping') {
+      graphics.fillRoundedRect(center.x - radius / 3.0 - radius / 5.0, center.y, radius / 3.0, radius / 10.0, radius / 20.0);
+      graphics.fillRoundedRect(center.x + radius / 3.0 - radius / 5.0, center.y, radius / 3.0, radius / 10.0, radius / 20.0);
+    } else {
+      graphics.fillEllipse(center.x - radius / 3.0, center.y, radius / 5.0, radius / 2.0);
+      graphics.fillEllipse(center.x + radius / 3.0, center.y, radius / 5.0, radius / 2.0);
+    }
   }
 }

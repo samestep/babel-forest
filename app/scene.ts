@@ -68,19 +68,19 @@ export class MainScene extends Phaser.Scene {
             brightness: 1,
             delay: 500,
             duration: 1000,
-            onComplete: () => { this.events.emit('introduction'); },
+            onComplete: () => { this.events.emit('main-introduction'); },
           });
           this.matter.world.off('collisionstart', listener);
         }
       };
       this.matter.world.on('collisionstart', listener);
 
-      this.scene.get('hud').events.on('library', () => {
+      this.scene.get('hud').events.on('hud-library', () => {
         this.tweens.add({
           targets: this.world,
           darkness: 0,
           duration: 1000,
-          onComplete: () => { this.events.emit('library'); },
+          onComplete: () => { this.events.emit('main-library'); },
         });
       });
     } else {
@@ -88,7 +88,7 @@ export class MainScene extends Phaser.Scene {
       this.world.darkness = 0;
       if (progress === 'library') {
         this.time.addEvent({ delay: 250, callback: () => {
-          this.events.emit('library');
+          this.events.emit('main-library');
         } });
       }
     }
@@ -157,6 +157,6 @@ export class MainScene extends Phaser.Scene {
     const { left, top, width, height } = this.cameras.main.worldView;
     this.graphics.fillStyle(0x000000, this.world.darkness);
     this.graphics.fillRect(left, top, width, height);
-    this.octopus.render(this.graphics);
+    this.octopus.render(this.graphics, progress);
   }
 }

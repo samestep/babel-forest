@@ -22,21 +22,15 @@ export class HUD extends Phaser.Scene {
     }));
     this.cooldown = delay;
 
-    const main = this.scene.get('main');
-    main.events.on('introduction', this.sequence(story.introduction, 'library'));
-    const f = this.sequence(story.library, 'move');
-    main.events.on('library', () => {
-      console.log('yeet');
-      f();
-    });
+    this.sequence(story.introduction, 'introduction', 'library');
+    this.sequence(story.library, 'library', 'move');
   }
 
   update() {
     this.text.update(this.cameras.main.worldView);
   }
 
-  sequence(lines: string[], progress: Progress): () => void {
-    this.queue = lines;
+  sequence(lines: string[], event: string, progress: Progress) {
     const next = () => {
       const line = this.queue.shift();
       if (line) {
@@ -48,9 +42,13 @@ export class HUD extends Phaser.Scene {
         }));
       } else {
         this.registry.values.save.progress = progress;
-        this.events.emit(progress);
+        this.events.emit(`hud-${progress}`);
       }
     }
-    return next;
+    const main = this.scene.get('main');
+    main.events.on(`main-${event}`, () => {
+      this.queue = lines;
+      next();
+    });
   }
 }
