@@ -4,6 +4,7 @@ const Progress = t.keyof({
   sleeping: null,
   library: null,
   move: null,
+  waiting: null,
 });
 
 export type Progress = t.TypeOf<typeof Progress>;

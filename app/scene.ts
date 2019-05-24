@@ -83,12 +83,22 @@ export class MainScene extends Phaser.Scene {
           onComplete: () => { this.events.emit('main-library'); },
         });
       });
+
+      this.scene.get('hud').events.on('hud-move', () => {
+        this.time.addEvent({ delay: 250, callback: () => {
+          this.events.emit('main-move');
+        } });
+      })
     } else {
       this.octopus.brightness = 1;
       this.world.darkness = 0;
       if (progress === 'library') {
         this.time.addEvent({ delay: 250, callback: () => {
           this.events.emit('main-library');
+        } });
+      } else if (progress === 'move') {
+        this.time.addEvent({ delay: 250, callback: () => {
+          this.events.emit('main-move');
         } });
       }
     }

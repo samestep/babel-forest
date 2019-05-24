@@ -15,3 +15,14 @@ export const library = [
   'Octopi?',
   "In any case, you've gotta get out of here my friend.",
 ];
+
+export const move = [
+  '(psst)',
+  '(hey human controlling the octopus)',
+  '(you know video games right?)',
+  '(ok well this is sort of like one of those)',
+  '(use WASD to crawl around)',
+  "(and when you're attached to a surface, use Space to jump off it)",
+  '(you always jump in the direction of your cursor)',
+  '(👍)',
+];
