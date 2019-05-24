@@ -33,6 +33,7 @@ export class HUD extends Phaser.Scene {
         }));
       } else {
         this.registry.values.save.progress = 'library';
+        this.events.emit('library');
       }
     }
     this.scene.get('main').events.on('introduction', next);

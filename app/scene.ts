@@ -73,8 +73,17 @@ export class MainScene extends Phaser.Scene {
         }
       };
       this.matter.world.on('collisionstart', listener);
+
+      this.scene.get('hud').events.on('library', () => {
+        this.tweens.add({
+          targets: this.world,
+          darkness: 0,
+          duration: 1000,
+        });
+      });
     } else {
       this.octopus.brightness = 1;
+      this.world.darkness = 0;
     }
 
     const spacebar = this.input.keyboard.addKey('SPACE');
@@ -138,6 +147,9 @@ export class MainScene extends Phaser.Scene {
     if (progress === 'library') {
       this.world.render(this.graphics);
     }
+    const { left, top, width, height } = this.cameras.main.worldView;
+    this.graphics.fillStyle(0x000000, this.world.darkness);
+    this.graphics.fillRect(left, top, width, height);
     this.octopus.render(this.graphics);
   }
 }

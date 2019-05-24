@@ -61,11 +61,13 @@ export class World {
   config: WorldConfig;
   comp: Matter.Composite;
   rooms: JSONMap<[number, number], Matter.Body[]>;
+  darkness: number;
 
   constructor(config: WorldConfig) {
     this.config = config;
     this.comp = Matter.Composite.create();
     this.rooms = new JSONMap();
+    this.darkness = 1;
   }
 
   query(col: number, row: number): { trap: boolean; door: boolean } {
