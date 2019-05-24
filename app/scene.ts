@@ -53,7 +53,8 @@ export class MainScene extends Phaser.Scene {
     });
     this.matter.world.add(this.octopus.comp);
 
-    if (this.registry.values.save.progress === 'sleeping') {
+    const { progress } = this.registry.values.save;
+    if (progress === 'sleeping') {
       const listener = (
         e: Phaser.Physics.Matter.Events.CollisionStartEvent,
         a: Matter.Body, b: Matter.Body,
@@ -79,11 +80,17 @@ export class MainScene extends Phaser.Scene {
           targets: this.world,
           darkness: 0,
           duration: 1000,
+          onComplete: () => { this.events.emit('library'); },
         });
       });
     } else {
       this.octopus.brightness = 1;
       this.world.darkness = 0;
+      if (progress === 'library') {
+        this.time.addEvent({ delay: 250, callback: () => {
+          this.events.emit('library');
+        } });
+      }
     }
 
     const spacebar = this.input.keyboard.addKey('SPACE');
@@ -104,7 +111,7 @@ export class MainScene extends Phaser.Scene {
 
   update(time: number, delta: number) {
     const { progress } = this.registry.values.save;
-    if (progress === 'library') {
+    if (progress !== 'sleeping') {
       const movingDir = {
         x: this.octopus.head.position.x,
         y: this.octopus.head.position.y,
@@ -144,7 +151,7 @@ export class MainScene extends Phaser.Scene {
     this.registry.values.save.location = [x, y];
 
     this.graphics.clear();
-    if (progress === 'library') {
+    if (progress !== 'sleeping') {
       this.world.render(this.graphics);
     }
     const { left, top, width, height } = this.cameras.main.worldView;

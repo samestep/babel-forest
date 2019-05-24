@@ -1,7 +1,15 @@
 import * as t from 'io-ts';
 
+const Progress = t.keyof({
+  sleeping: null,
+  library: null,
+  move: null,
+});
+
+export type Progress = t.TypeOf<typeof Progress>;
+
 const Save = t.interface({
-  progress: t.keyof({ sleeping: null, library: null }),
+  progress: Progress,
   location: t.tuple([t.number, t.number]),
 });
 

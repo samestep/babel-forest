@@ -1,5 +1,6 @@
 /// <reference path="../node_modules/phaser/types/phaser.d.ts" />
 
+import { Progress } from './save';
 import * as story from './story';
 import { Text } from './text';
 
@@ -21,7 +22,21 @@ export class HUD extends Phaser.Scene {
     }));
     this.cooldown = delay;
 
-    this.queue = story.introduction;
+    const main = this.scene.get('main');
+    main.events.on('introduction', this.sequence(story.introduction, 'library'));
+    const f = this.sequence(story.library, 'move');
+    main.events.on('library', () => {
+      console.log('yeet');
+      f();
+    });
+  }
+
+  update() {
+    this.text.update(this.cameras.main.worldView);
+  }
+
+  sequence(lines: string[], progress: Progress): () => void {
+    this.queue = lines;
     const next = () => {
       const line = this.queue.shift();
       if (line) {
@@ -32,14 +47,10 @@ export class HUD extends Phaser.Scene {
           } });
         }));
       } else {
-        this.registry.values.save.progress = 'library';
-        this.events.emit('library');
+        this.registry.values.save.progress = progress;
+        this.events.emit(progress);
       }
     }
-    this.scene.get('main').events.on('introduction', next);
-  }
-
-  update() {
-    this.text.update(this.cameras.main.worldView);
+    return next;
   }
 }
