@@ -3,7 +3,7 @@
 import * as seedrandom from 'seedrandom';
 
 import * as random from './random';
-import { hexToRgb, rgbToHex, multiply } from './color';
+import { multiply } from './color';
 
 interface Book {
   rect: Phaser.Geom.Rectangle;
