@@ -4,6 +4,7 @@ import * as MatterJS from 'matter-js';
 // @ts-ignore: Property 'Matter' does not exist on type 'typeof Matter'.
 const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
+import { drawArrow } from './arrow';
 import { Octopus } from './octopus';
 import { World } from './world';
 
@@ -206,6 +207,9 @@ export class MainScene extends Phaser.Scene {
     this.graphics.fillStyle(0xffffff, Math.abs(1 - this.oscillate));
     if (this.book) {
       this.graphics.fillRectShape(this.book);
+      const bookVec = { x: this.book.centerX, y: this.book.centerY };
+      const diff = Matter.Vector.sub(this.octopus.head.position, bookVec);
+      drawArrow(this.graphics, this.octopus.head.position, diff);
     }
   }
 }
