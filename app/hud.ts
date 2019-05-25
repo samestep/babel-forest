@@ -7,7 +7,6 @@ import { Text } from './text';
 const delay = 100;
 
 export class HUD extends Phaser.Scene {
-  cooldown: number;
   text: Text;
   queue: [string, string][];
 
@@ -20,7 +19,6 @@ export class HUD extends Phaser.Scene {
       fontFamily: 'sans',
       fontSize: '50px',
     }));
-    this.cooldown = delay;
 
     this.sequence(story.introduction, 'introduction', 'library');
     this.sequence(story.library, 'library', 'move');
