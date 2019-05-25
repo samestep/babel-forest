@@ -4,7 +4,6 @@ export class Text {
   inner: Phaser.GameObjects.Text;
   line: string;
   progCounter: number;
-  worldView: Phaser.Geom.Rectangle;
 
   constructor(pText: Phaser.GameObjects.Text) {
     this.inner = pText;
