@@ -28,9 +28,7 @@ export function loadGame(): Save {
   try {
     const parsed = JSON.parse(str);
     const either = Save.decode(parsed);
-    const save = either.getOrElse(defaultSave);
-    save.progress = 'getting1';
-    return save;
+    return either.getOrElse(defaultSave);
   } catch (e) {
     return defaultSave;
   }
