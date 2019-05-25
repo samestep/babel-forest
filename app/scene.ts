@@ -187,6 +187,7 @@ export class MainScene extends Phaser.Scene {
         const pointerLocation = { x: pointer.worldX, y: pointer.worldY };
         if (this.waiting && this.octopus.isGrounded()) {
           this.waiting = false;
+          this.registry.values.save.progress = 'book1';
           this.events.emit('main-book1');
         }
         this.octopus.jump(pointerLocation);
@@ -209,9 +210,11 @@ export class MainScene extends Phaser.Scene {
     if (this.closeEnough()) {
       this.book = null;
       if (progress === 'getting1') {
+        this.registry.values.save.progress = 'book2';
         this.events.emit('main-book2');
       }
       if (progress === 'getting2') {
+        this.registry.values.save.progress = 'close';
         this.events.emit('main-close');
       }
     }
