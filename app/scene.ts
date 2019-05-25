@@ -112,7 +112,7 @@ export class MainScene extends Phaser.Scene {
     const waitingF = () => { this.waiting = true; };
     this.scene.get('hud').events.on('hud-waiting', waitingF);
     if (progress === 'waiting') {
-      waitingF;
+      waitingF();
     }
 
     const spacebar = this.input.keyboard.addKey('SPACE');
