@@ -158,7 +158,7 @@ export class MainScene extends Phaser.Scene {
     if (this.book) {
       const bookVec = { x: this.book.centerX, y: this.book.centerY };
       const diff = Matter.Vector.sub(this.octopus.head.position, bookVec);
-      return Matter.Vector.magnitude(diff) < 50;
+      return Matter.Vector.magnitude(diff) < 40;
     } else {
       return false;
     }
