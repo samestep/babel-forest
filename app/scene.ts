@@ -203,10 +203,12 @@ export class MainScene extends Phaser.Scene {
     const { left, top, width, height } = this.cameras.main.worldView;
     this.graphics.fillStyle(0x000000, this.world.darkness);
     this.graphics.fillRect(left, top, width, height);
-    this.octopus.render(this.graphics, progress);
-    this.graphics.fillStyle(0xffffff, Math.abs(1 - this.oscillate));
     if (this.book) {
+      this.graphics.fillStyle(0xffffff, Math.abs(1 - this.oscillate));
       this.graphics.fillRectShape(this.book);
+    }
+    this.octopus.render(this.graphics, progress);
+    if (this.book) {
       const bookVec = { x: this.book.centerX, y: this.book.centerY };
       const diff = Matter.Vector.sub(this.octopus.head.position, bookVec);
       drawArrow(this.graphics, this.octopus.head.position, diff);
