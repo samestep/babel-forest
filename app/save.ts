@@ -7,6 +7,7 @@ const Progress = t.keyof({
   waiting: null,
   book1: null,
   getting1: null,
+  found1: null,
   book2: null,
   getting2: null,
   close: null,

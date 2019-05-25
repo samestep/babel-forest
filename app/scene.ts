@@ -210,8 +210,8 @@ export class MainScene extends Phaser.Scene {
     if (this.closeEnough()) {
       this.book = null;
       if (progress === 'getting1') {
-        this.registry.values.save.progress = 'book2';
-        this.events.emit('main-book2');
+        this.registry.values.save.progress = 'found1';
+        this.events.emit('main-found1');
       }
       if (progress === 'getting2') {
         this.registry.values.save.progress = 'close';
