@@ -237,6 +237,17 @@ export class World {
     }
   }
 
+  chooseBook(pos: Matter.Vector): Phaser.Geom.Rectangle {
+    const [col, row] = this.closestRoom(pos);
+    // const { trap } = this.query(col, row);
+    // const { trap: trapBelow } = this.query(col, row + 1);
+    const { x, y } = this.roomCenter(col, row);
+    const [cornerX, cornerY] = innerCorner(this.config);
+    return new Phaser.Geom.Rectangle(
+      x + cornerX, y + cornerY, this.config.width, worldHeight(this.config),
+    );
+  }
+
   update(
     worldView: Phaser.Geom.Rectangle,
     makeGraphics: () => Phaser.GameObjects.Graphics,

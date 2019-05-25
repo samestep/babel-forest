@@ -17,6 +17,8 @@ export class MainScene extends Phaser.Scene {
   dDown: boolean;
   jump: boolean;
   waiting: boolean;
+  book: Phaser.Geom.Rectangle;
+  oscillate: number;
 
   create() {
     this.wDown = false;
@@ -115,6 +117,14 @@ export class MainScene extends Phaser.Scene {
       waitingF();
     }
 
+    const getting1F = () => {
+      this.book = this.world.chooseBook(this.octopus.head.position);
+    }
+    this.scene.get('hud').events.on('hud-getting1', getting1F);
+    if (progress === 'getting1') {
+      getting1F();
+    }
+
     const spacebar = this.input.keyboard.addKey('SPACE');
     spacebar.on('down', () => { this.jump = true; });
 
@@ -173,6 +183,15 @@ export class MainScene extends Phaser.Scene {
       key => this.textures.remove(key),
     );
 
+    if (this.oscillate) {
+      this.oscillate += delta/1000;
+      if (this.oscillate > 2) {
+        this.oscillate -= 2;
+      }
+    } else {
+      this.oscillate = 1;
+    }
+
     const { x, y } = this.octopus.head.position;
     this.registry.values.save.location = [x, y];
 
@@ -184,5 +203,9 @@ export class MainScene extends Phaser.Scene {
     this.graphics.fillStyle(0x000000, this.world.darkness);
     this.graphics.fillRect(left, top, width, height);
     this.octopus.render(this.graphics, progress);
+    this.graphics.fillStyle(0xffffff, Math.abs(1 - this.oscillate));
+    if (this.book) {
+      this.graphics.fillRectShape(this.book);
+    }
   }
 }
