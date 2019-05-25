@@ -45,3 +45,13 @@ export const book1: [string, string][] = [
   ['red', "Actually, I happen to need a book from that room you're in."],
   ['red', 'That one over there, can you reach it for me?'],
 ];
+
+export const book2: [string, string][] = [
+  ['red', 'Impressive... you found it.'],
+  ['red', "Hmm... I need another one in a bit, but it's further away..."],
+  ['red', 'See if you can find your way over to it while I work on this.'],
+];
+
+export const close: [string, string][] = [
+  ['white', "That's all for now folks!"],
+];

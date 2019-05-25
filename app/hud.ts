@@ -26,6 +26,8 @@ export class HUD extends Phaser.Scene {
     this.sequence(story.library, 'library', 'move');
     this.sequence(story.move, 'move', 'waiting');
     this.coloredSequence(story.book1, 'book1', 'getting1');
+    this.coloredSequence(story.book2, 'book2', 'getting2');
+    this.coloredSequence(story.close, 'close', 'end');
   }
 
   update() {

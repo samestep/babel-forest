@@ -94,6 +94,10 @@ export class MainScene extends Phaser.Scene {
         this.time.addEvent({ delay: 250, callback: () => {
           this.events.emit('main-book1');
         } });
+      } else if (progress === 'book2') {
+        this.time.addEvent({ delay: 250, callback: () => {
+          this.events.emit('main-book2');
+        } });
       }
     }
 
@@ -119,11 +123,19 @@ export class MainScene extends Phaser.Scene {
     }
 
     const getting1F = () => {
-      this.book = this.world.chooseBook(this.octopus.head.position);
+      this.book = this.world.chooseBook(this.octopus.head.position, 0);
     }
     this.scene.get('hud').events.on('hud-getting1', getting1F);
     if (progress === 'getting1') {
       getting1F();
+    }
+
+    const getting2F = () => {
+      this.book = this.world.chooseBook(this.octopus.head.position, 3);
+    }
+    this.scene.get('hud').events.on('hud-getting2', getting2F);
+    if (progress === 'getting2') {
+      getting2F();
     }
 
     const spacebar = this.input.keyboard.addKey('SPACE');
@@ -140,6 +152,16 @@ export class MainScene extends Phaser.Scene {
     a.on('up', () => { this.aDown = false; });
     s.on('up', () => { this.sDown = false; });
     d.on('up', () => { this.dDown = false; });
+  }
+
+  closeEnough(): boolean {
+    if (this.book) {
+      const bookVec = { x: this.book.centerX, y: this.book.centerY };
+      const diff = Matter.Vector.sub(this.octopus.head.position, bookVec);
+      return Matter.Vector.magnitude(diff) < 100;
+    } else {
+      return false;
+    }
   }
 
   update(time: number, delta: number) {
@@ -183,6 +205,16 @@ export class MainScene extends Phaser.Scene {
       () => this.add.graphics(),
       key => this.textures.remove(key),
     );
+
+    if (this.closeEnough()) {
+      this.book = null;
+      if (progress === 'getting1') {
+        this.events.emit('main-book2');
+      }
+      if (progress === 'getting2') {
+        this.events.emit('main-close');
+      }
+    }
 
     if (this.oscillate) {
       this.oscillate += delta/1000;

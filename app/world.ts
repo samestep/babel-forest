@@ -6,8 +6,9 @@ const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 
 import * as seedrandom from 'seedrandom';
 
-import { JSONMap } from './map';
 import { drawBooks, generateBooks } from './book';
+import { Graph, bfs } from './graph';
+import { JSONMap } from './map';
 import * as random from './random';
 
 interface WorldConfig {
@@ -258,14 +259,54 @@ export class World {
     })));
   }
 
-  chooseBook(pos: Matter.Vector): Phaser.Geom.Rectangle {
-    const [col, row] = this.closestRoom(pos);
+  chooseBookFromRoom(col: number, row: number) {
     const rect = random.choose(this.roomBooks(col, row));
     const { x: centerX, y: centerY } = this.roomCenter(col, row);
     const [cornerX, cornerY] = outerCorner(this.config)
     rect.x += centerX + cornerX;
     rect.y += centerY + cornerY;
     return rect;
+  }
+
+  graph(): Graph<[number, number]> {
+    const self = this;
+    return {
+      neighbors([col, row]: [number, number]): [number, number][] {
+        const arr = [];
+        const { trap: up, door: left } = self.query(col, row);
+        const { door: right } = self.query(col + 1, row);
+        const { trap: down } = self.query(col, row + 1);
+        if (!up) {
+          arr.push([col, row - 1]);
+        }
+        if (!left) {
+          arr.push([col - 1, row]);
+        }
+        if (!right) {
+          arr.push([col + 1, row]);
+        }
+        if (!down) {
+          arr.push([col, row + 1]);
+        }
+        return arr;
+      }
+    };
+  }
+
+  chooseBook(pos: Matter.Vector, depth: number): Phaser.Geom.Rectangle {
+    const start = this.closestRoom(pos);
+    const graph = this.graph();
+    const rooms = bfs(graph, start, depth);
+
+    const distTo = ([col, row]: [number, number]) => {
+      const [col0, row0] = start;
+      return Math.pow(col - col0, 2) + Math.pow(row - row0, 2);
+    };
+
+    const dist = Math.min(...(rooms.map(distTo)));
+    const close = rooms.filter(room => distTo(room) === dist);
+    const [col, row] = random.choose(close);
+    return this.chooseBookFromRoom(col, row);
   }
 
   update(
