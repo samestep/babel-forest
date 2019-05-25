@@ -7,7 +7,8 @@ const Matter: typeof MatterJS = Phaser.Physics.Matter.Matter;
 import * as seedrandom from 'seedrandom';
 
 import { JSONMap } from './map';
-import { drawBooks } from './book';
+import { drawBooks, generateBooks } from './book';
+import * as random from './random';
 
 interface WorldConfig {
   book: number; // the height of the gap between bookshelves
@@ -138,6 +139,40 @@ export class World {
     return rects;
   }
 
+  roomShelves(col: number, row: number): [Phaser.Geom.Rectangle, string][] {
+    const { trap } = this.query(col, row);
+    const { trap: trapBelow } = this.query(col, row + 1);
+    const shelves = [];
+    for (let i = 1; i < this.config.height; i++) {
+      const y = this.config.wall + i*(this.config.book + this.config.shelf) - this.config.shelf;
+      if (!trap || (!trapBelow && i >= this.config.height - 1)) {
+        shelves.push([
+          new Phaser.Geom.Rectangle(
+            this.config.wall, y - this.config.book,
+            shelfWidth(this.config), this.config.book,
+          ),
+          JSON.stringify([col, row, i, 'left']),
+        ]);
+        shelves.push([
+          new Phaser.Geom.Rectangle(
+            this.config.wall + this.config.width - shelfWidth(this.config), y - this.config.book,
+            shelfWidth(this.config), this.config.book,
+          ),
+          JSON.stringify([col, row, i, 'right']),
+        ]);
+      } else {
+        shelves.push([
+          new Phaser.Geom.Rectangle(
+            this.config.wall, y - this.config.book,
+            this.config.width, this.config.book,
+          ),
+          JSON.stringify([col, row, i]),
+        ]);
+      }
+    }
+    return shelves;
+  }
+
   drawRoom(col: number, row: number, graphics: Phaser.GameObjects.Graphics) {
     const { trap, door } = this.query(col, row);
 
@@ -173,32 +208,8 @@ export class World {
         shelfWidth(this.config), this.config.shelf,
       );
       if (!trap || (!trapBelow && i >= this.config.height - 1)) {
-        drawBooks(
-          new Phaser.Geom.Rectangle(
-            this.config.wall, y - this.config.book,
-            shelfWidth(this.config), this.config.book,
-          ),
-          graphics,
-          seedrandom(JSON.stringify([col, row, i, 'left'])),
-        );
-        drawBooks(
-          new Phaser.Geom.Rectangle(
-            this.config.wall + this.config.width - shelfWidth(this.config), y - this.config.book,
-            shelfWidth(this.config), this.config.book,
-          ),
-          graphics,
-          seedrandom(JSON.stringify([col, row, i, 'right'])),
-        );
         graphics.fillStyle(ladderColor);
       } else {
-        drawBooks(
-          new Phaser.Geom.Rectangle(
-            this.config.wall, y - this.config.book,
-            this.config.width, this.config.book,
-          ),
-          graphics,
-          seedrandom(JSON.stringify([col, row, i])),
-        );
         graphics.fillStyle(shelfColor);
       }
       graphics.fillRect(
@@ -206,6 +217,10 @@ export class World {
         this.config.trap, this.config.shelf,
       );
     }
+
+    this.roomShelves(col, row).forEach(([rect, seed]) => {
+      drawBooks(rect, graphics, seedrandom(seed));
+    });
 
     graphics.fillStyle(ladderColor);
     if (!trap) {
@@ -237,15 +252,20 @@ export class World {
     }
   }
 
+  roomBooks(col: number, row: number): Phaser.Geom.Rectangle[] {
+    return [].concat(...(this.roomShelves(col, row).map(([rect, seed]) => {
+      return generateBooks(rect, seedrandom(seed)).map(book => book.rect);
+    })));
+  }
+
   chooseBook(pos: Matter.Vector): Phaser.Geom.Rectangle {
     const [col, row] = this.closestRoom(pos);
-    // const { trap } = this.query(col, row);
-    // const { trap: trapBelow } = this.query(col, row + 1);
-    const { x, y } = this.roomCenter(col, row);
-    const [cornerX, cornerY] = innerCorner(this.config);
-    return new Phaser.Geom.Rectangle(
-      x + cornerX, y + cornerY, this.config.width, worldHeight(this.config),
-    );
+    const rect = random.choose(this.roomBooks(col, row));
+    const { x: centerX, y: centerY } = this.roomCenter(col, row);
+    const [cornerX, cornerY] = outerCorner(this.config)
+    rect.x += centerX + cornerX;
+    rect.y += centerY + cornerY;
+    return rect;
   }
 
   update(

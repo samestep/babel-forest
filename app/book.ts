@@ -5,7 +5,7 @@ import * as seedrandom from 'seedrandom';
 import * as random from './random';
 import { multiply } from './color';
 
-interface Book {
+export interface Book {
   rect: Phaser.Geom.Rectangle;
   color: number;
 }
@@ -16,7 +16,7 @@ const minHeight = 0.7; // multiplied by the available height
 const maxHeight = 0.9; // multiplied by the available height
 const maxGroup = 5;
 
-function generateBooks(
+export function generateBooks(
   rect: Phaser.Geom.Rectangle, rng: seedrandom.prng
 ): Book[] {
   const books = [];
