@@ -48,7 +48,6 @@ export class Page {
     this.right.setWordWrapWidth((this.worldView.width - 300)/2);
 
     const linesPerPage = maxLines(this.left, this.worldView.height - 200);
-    console.log(linesPerPage);
     const lines = this.left.runWordWrap(paragraphs.join('\n\n')).split('\n');
     this.pages = _.chunk(lines, linesPerPage).map(page => {
       return _.toArray(page).join('\n');
