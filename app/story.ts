@@ -69,3 +69,12 @@ export const books = [
     'Praesent laoreet porttitor consequat. Nullam vel nunc vel orci dignissim tincidunt. Nulla egestas mauris quis est tempus, accumsan feugiat ex interdum. Duis eu purus nec magna eleifend malesuada. Nulla mollis lorem id imperdiet sagittis. Fusce venenatis cursus magna, vel consequat nisi blandit sit amet. In suscipit placerat quam id consequat. Mauris lacinia metus fermentum risus blandit, at pharetra quam tempus. Nulla sit amet ex malesuada, mattis mauris ut, pharetra massa. In congue nibh accumsan, hendrerit sem ac, convallis erat. Ut vulputate rutrum tempor.',
   ],
 ];
+
+export const credits = [
+  'Thanks for playing!',
+  '',
+  'design - Sam Estep',
+  'code - Sam Estep',
+  'art - Sam Estep',
+  'story - Sam Estep',
+];

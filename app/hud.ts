@@ -47,6 +47,18 @@ export class HUD extends Phaser.Scene {
         targets: this,
         opacity: 1,
         duration: 1000,
+        onComplete: () => {
+          const credits = this.add.text(100, 100, story.credits.join('\n'), {
+            fontFamily: 'sans-serif',
+            fontSize: '25px',
+          });
+          credits.setAlpha(0);
+          this.tweens.add({
+            targets: credits,
+            alpha: 1,
+            duration: 1000,
+          })
+        }
       });
     });
 
