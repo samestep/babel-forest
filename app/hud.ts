@@ -57,7 +57,7 @@ export class HUD extends Phaser.Scene {
             targets: credits,
             alpha: 1,
             duration: 1000,
-          })
+          });
         }
       });
     });
