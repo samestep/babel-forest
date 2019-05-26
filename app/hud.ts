@@ -23,7 +23,7 @@ export class HUD extends Phaser.Scene {
     this.graphics = this.add.graphics();
 
     this.text = new Text(this.add.text(10, 10, '', {
-      fontFamily: 'sans',
+      fontFamily: 'sans-serif',
       fontSize: '50px',
     }));
 
