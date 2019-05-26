@@ -44,11 +44,11 @@ export class HUD extends Phaser.Scene {
     if (this.justClicked) {
       this.justClicked = false;
       if (this.input.activePointer.x < this.cameras.main.worldView.centerX) {
-        if (this.page.pageNum > 0) {
+        if (this.page.leftArrow) {
           this.page.pageNum--;
         }
       } else {
-        if (this.page.pageNum + 2 < this.page.pages.length) {
+        if (this.page.rightArrow) {
           this.page.pageNum++;
         }
       }
@@ -95,7 +95,11 @@ export class HUD extends Phaser.Scene {
 
   showBook(paragraphs: string[], event: string) {
     this.scene.get('main').events.on(`main-${event}`, () => {
-      this.page.refillText(paragraphs);
+      this.page.rebuild(
+        paragraphs,
+        () => this.add.graphics(),
+        key => this.textures.remove(key),
+      );
       this.tweens.add({
         targets: this.page,
         opacity: 1,

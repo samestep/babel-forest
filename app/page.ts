@@ -25,6 +25,8 @@ export class Page {
   pageNum: number;
   savedPageNum: number;
   opacity: number;
+  leftArrow: boolean;
+  rightArrow: boolean;
 
   constructor(left: Phaser.GameObjects.Text, right: Phaser.GameObjects.Text) {
     [left, right].forEach(text => {
@@ -39,7 +41,11 @@ export class Page {
     this.opacity = 0;
   }
 
-  refillText(paragraphs: string[]) {
+  rebuild(
+    paragraphs: string[],
+    makeGraphics: () => Phaser.GameObjects.Graphics,
+    destroyTexture: (key: string) => void,
+  ) {
     this.paragraphs = paragraphs;
 
     this.left.setX(100);
@@ -63,6 +69,40 @@ export class Page {
       }
     }
     this.savedPageNum = this.pageNum;
+
+    this.leftArrow = (this.pageNum > 0);
+    this.rightArrow = (this.pageNum + 2 < this.pages.length);
+
+    destroyTexture('book');
+    const g = makeGraphics();
+    g.fillStyle(0x4f2c0f);
+    g.fillRect(40, 40, this.worldView.width - 80, this.worldView.height - 80);
+    g.fillStyle(0xffffff);
+    g.fillRect(50, 50, this.worldView.width - 100, this.worldView.height - 100);
+    g.fillStyle(0x888888);
+    g.fillRect(this.worldView.centerX - 2, 50, 4, this.worldView.height - 100);
+    if (this.leftArrow) {
+      arrow.drawArrow(
+        g,
+        { x: (50 + this.worldView.centerX)/2, y: this.worldView.bottom - 75 },
+        { x: -1, y: 0 },
+        arrow.page,
+        0x000000,
+        false,
+      );
+    }
+    if (this.rightArrow) {
+      arrow.drawArrow(
+        g,
+        { x: (this.worldView.right - 50 + this.worldView.centerX)/2, y: this.worldView.bottom - 75 },
+        { x: 1, y: 0 },
+        arrow.page,
+        0x000000,
+        false,
+      );
+    }
+    g.generateTexture('book');
+    g.destroy();
   }
 
   update(
@@ -83,39 +123,8 @@ export class Page {
       );
 
       if (this.paragraphs) {
-        this.refillText(this.paragraphs);
+        this.rebuild(this.paragraphs, makeGraphics, destroyTexture);
       }
-
-      destroyTexture('book');
-      const g = makeGraphics();
-      g.fillStyle(0x4f2c0f);
-      g.fillRect(40, 40, this.worldView.width - 80, this.worldView.height - 80);
-      g.fillStyle(0xffffff);
-      g.fillRect(50, 50, this.worldView.width - 100, this.worldView.height - 100);
-      g.fillStyle(0x888888);
-      g.fillRect(this.worldView.centerX - 2, 50, 4, this.worldView.height - 100);
-      if (this.pageNum > 0) {
-        arrow.drawArrow(
-          g,
-          { x: (50 + this.worldView.centerX)/2, y: this.worldView.bottom - 75 },
-          { x: -1, y: 0 },
-          arrow.page,
-          0x000000,
-          false,
-        );
-      }
-      if (this.pageNum + 2 < this.pages.length) {
-        arrow.drawArrow(
-          g,
-          { x: (this.worldView.right - 50 + this.worldView.centerX)/2, y: this.worldView.bottom - 75 },
-          { x: 1, y: 0 },
-          arrow.page,
-          0x000000,
-          false,
-        );
-      }
-      g.generateTexture('book');
-      g.destroy();
     }
   }
 
