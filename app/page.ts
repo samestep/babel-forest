@@ -61,7 +61,11 @@ export class Page {
     }
   }
 
-  update(worldView: Phaser.Geom.Rectangle) {
+  update(
+    worldView: Phaser.Geom.Rectangle,
+    makeGraphics: () => Phaser.GameObjects.Graphics,
+    destroyTexture: (key: string) => void,
+  ) {
     this.left.setAlpha(this.opacity);
     this.right.setAlpha(this.opacity);
     if (!(this.worldView)
@@ -72,14 +76,28 @@ export class Page {
         worldView.x, worldView.y,
         worldView.width, worldView.height,
       );
+
       if (this.paragraphs) {
         this.refillText(this.paragraphs);
       }
+
+      destroyTexture('book');
+      const g = makeGraphics();
+      g.fillStyle(0x4f2c0f);
+      g.fillRect(40, 40, this.worldView.width - 80, this.worldView.height - 80);
+      g.fillStyle(0xffffff);
+      g.fillRect(50, 50, this.worldView.width - 100, this.worldView.height - 100);
+      g.fillStyle(0x888888);
+      g.fillRect(this.worldView.centerX - 2, 50, 4, this.worldView.height - 100);
+      g.generateTexture('book');
+      g.destroy();
     }
   }
 
   render(graphics: Phaser.GameObjects.Graphics) {
     graphics.fillStyle(0xffffff, this.opacity);
-    graphics.fillRect(50, 50, this.worldView.width - 100, this.worldView.height - 100);
+    graphics.setTexture('book');
+    graphics.fillRect(0, 0, this.worldView.width, this.worldView.height);
+    graphics.setTexture();
   }
 }

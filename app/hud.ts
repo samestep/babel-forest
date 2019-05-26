@@ -39,7 +39,11 @@ export class HUD extends Phaser.Scene {
 
   update() {
     this.text.update(this.cameras.main.worldView);
-    this.page.update(this.cameras.main.worldView);
+    this.page.update(
+      this.cameras.main.worldView,
+      () => this.add.graphics(),
+      key => this.textures.remove(key),
+    );
 
     this.graphics.clear();
     this.page.render(this.graphics);
@@ -75,8 +79,12 @@ export class HUD extends Phaser.Scene {
 
   showBook(paragraphs: string[], event: string) {
     this.scene.get('main').events.on(`main-${event}`, () => {
-      this.page.opacity = 1;
       this.page.refillText(paragraphs);
+      this.tweens.add({
+        targets: this.page,
+        opacity: 1,
+        duration: 1000,
+      })
     });
   }
 }
