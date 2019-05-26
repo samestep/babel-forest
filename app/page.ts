@@ -45,10 +45,10 @@ export class Page {
     this.right.setY(100);
 
     this.left.setWordWrapWidth((this.worldView.width - 300)/2);
-    this.right.setWordWrapWidth((this.worldView.width - 300)/2);
-
     const linesPerPage = maxLines(this.left, this.worldView.height - 200);
     const lines = this.left.runWordWrap(paragraphs.join('\n\n')).split('\n');
+    this.left.setWordWrapWidth(null); // otherwise it would wrap "twice", weird
+
     this.pages = _.chunk(lines, linesPerPage).map(page => {
       return _.toArray(page).join('\n');
     });
