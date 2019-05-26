@@ -36,6 +36,7 @@ export class HUD extends Phaser.Scene {
     this.coloredSequence(story.close, 'close', 'end');
 
     this.showBook(story.books[0], 'found1', 'book2');
+    this.showBook(story.books[1], 'found2', 'close');
 
     this.input.on('pointerdown', () => { this.justClicked = true; });
   }

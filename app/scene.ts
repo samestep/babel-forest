@@ -142,6 +142,10 @@ export class MainScene extends Phaser.Scene {
       getting2F();
     }
 
+    this.scene.get('hud').events.on('hud-close', () => {
+      this.events.emit('main-close');
+    });
+
     const spacebar = this.input.keyboard.addKey('SPACE');
     spacebar.on('down', () => { this.jump = true; });
 
@@ -218,8 +222,8 @@ export class MainScene extends Phaser.Scene {
         this.events.emit('main-found1');
       }
       if (progress === 'getting2') {
-        this.registry.values.save.progress = 'close';
-        this.events.emit('main-close');
+        this.registry.values.save.progress = 'found2';
+        this.events.emit('main-found2');
       }
     }
 
