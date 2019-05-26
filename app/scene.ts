@@ -98,6 +98,10 @@ export class MainScene extends Phaser.Scene {
         this.time.addEvent({ delay: 250, callback: () => {
           this.events.emit('main-book2');
         } });
+      } else if (progress === 'close') {
+        this.time.addEvent({ delay: 250, callback: () => {
+          this.events.emit('main-close');
+        } });
       }
     }
 
