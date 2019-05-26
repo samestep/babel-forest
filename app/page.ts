@@ -2,6 +2,8 @@
 
 import * as _ from 'underscore';
 
+import * as arrow from './arrow';
+
 const testLine = 'F';
 
 function maxLines(text: Phaser.GameObjects.Text, height: number): number {
@@ -21,6 +23,7 @@ export class Page {
   paragraphs: string[];
   pages: string[];
   pageNum: number;
+  savedPageNum: number;
   opacity: number;
 
   constructor(left: Phaser.GameObjects.Text, right: Phaser.GameObjects.Text) {
@@ -59,6 +62,7 @@ export class Page {
         this.right.setText(this.pages[this.pageNum + 1]);
       }
     }
+    this.savedPageNum = this.pageNum;
   }
 
   update(
@@ -71,6 +75,7 @@ export class Page {
     if (!(this.worldView)
         || worldView.width !== this.worldView.width
         || worldView.height !== this.worldView.height
+        || this.savedPageNum !== this.pageNum
     ) {
       this.worldView = new Phaser.Geom.Rectangle(
         worldView.x, worldView.y,
@@ -89,6 +94,26 @@ export class Page {
       g.fillRect(50, 50, this.worldView.width - 100, this.worldView.height - 100);
       g.fillStyle(0x888888);
       g.fillRect(this.worldView.centerX - 2, 50, 4, this.worldView.height - 100);
+      if (this.pageNum > 0) {
+        arrow.drawArrow(
+          g,
+          { x: (50 + this.worldView.centerX)/2, y: this.worldView.bottom - 75 },
+          { x: -1, y: 0 },
+          arrow.page,
+          0x000000,
+          false,
+        );
+      }
+      if (this.pageNum + 2 < this.pages.length) {
+        arrow.drawArrow(
+          g,
+          { x: (this.worldView.right - 50 + this.worldView.centerX)/2, y: this.worldView.bottom - 75 },
+          { x: 1, y: 0 },
+          arrow.page,
+          0x000000,
+          false,
+        );
+      }
       g.generateTexture('book');
       g.destroy();
     }

@@ -12,6 +12,7 @@ export class HUD extends Phaser.Scene {
   text: Text;
   queue: [string, string][];
   page: Page;
+  justClicked: boolean;
 
   create() {
     addEventListener('resize', () => {
@@ -35,9 +36,24 @@ export class HUD extends Phaser.Scene {
     this.coloredSequence(story.close, 'close', 'end');
 
     this.showBook(story.books[0], 'found1');
+
+    this.input.on('pointerdown', () => { this.justClicked = true; });
   }
 
   update() {
+    if (this.justClicked) {
+      this.justClicked = false;
+      if (this.input.activePointer.x < this.cameras.main.worldView.centerX) {
+        if (this.page.pageNum > 0) {
+          this.page.pageNum--;
+        }
+      } else {
+        if (this.page.pageNum + 2 < this.page.pages.length) {
+          this.page.pageNum++;
+        }
+      }
+    }
+
     this.text.update(this.cameras.main.worldView);
     this.page.update(
       this.cameras.main.worldView,
