@@ -42,7 +42,7 @@ export function loadGame(): Save {
 
 export function saveGame(data: Save) {
   if (data.progress === 'end') {
-    data.progress = 'sleeping';
+    data = defaultSave;
   }
   localStorage.setItem('babel-forest', JSON.stringify(data));
 }
