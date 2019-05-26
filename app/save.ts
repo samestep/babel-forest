@@ -10,6 +10,7 @@ const Progress = t.keyof({
   found1: null,
   book2: null,
   getting2: null,
+  found2: null,
   close: null,
   end: null,
 });
