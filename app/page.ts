@@ -75,7 +75,7 @@ export class Page {
     if (!(this.worldView)
         || worldView.width !== this.worldView.width
         || worldView.height !== this.worldView.height
-        || this.savedPageNum !== this.pageNum
+        || (this.paragraphs && this.savedPageNum !== this.pageNum)
     ) {
       this.worldView = new Phaser.Geom.Rectangle(
         worldView.x, worldView.y,
