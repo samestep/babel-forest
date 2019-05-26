@@ -62,6 +62,8 @@ export class Page {
       return _.toArray(page).join('\n');
     });
 
+    this.left.setText('');
+    this.right.setText('');
     if (this.pages.length > this.pageNum) {
       this.left.setText(this.pages[this.pageNum]);
       if (this.pages.length > this.pageNum + 1) {
