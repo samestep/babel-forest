@@ -35,7 +35,7 @@ export class HUD extends Phaser.Scene {
     this.coloredSequence(story.book2, 'book2', 'getting2');
     this.coloredSequence(story.close, 'close', 'end');
 
-    this.showBook(story.books[0], 'found1');
+    this.showBook(story.books[0], 'found1', 'book2');
 
     this.input.on('pointerdown', () => { this.justClicked = true; });
   }
@@ -93,7 +93,7 @@ export class HUD extends Phaser.Scene {
     this.coloredSequence(coloredLines, event, progress);
   }
 
-  showBook(paragraphs: string[], event: string) {
+  showBook(paragraphs: string[], event: string, progress: Progress) {
     this.scene.get('main').events.on(`main-${event}`, () => {
       this.page.rebuild(
         paragraphs,
@@ -104,6 +104,20 @@ export class HUD extends Phaser.Scene {
         targets: this.page,
         opacity: 1,
         duration: 1000,
+        onComplete: () => {
+          const escape = this.input.keyboard.addKey('ESC');
+          escape.once('down', () => {
+            this.tweens.add({
+              targets: this.page,
+              opacity: 0,
+              duration: 1000,
+              onComplete: () => {
+                this.registry.values.save.progress = progress;
+                this.events.emit(`hud-${progress}`);
+              },
+            });
+          });
+        },
       })
     });
   }

@@ -130,6 +130,10 @@ export class MainScene extends Phaser.Scene {
       getting1F();
     }
 
+    this.scene.get('hud').events.on('hud-book2', () => {
+      this.events.emit('main-book2');
+    });
+
     const getting2F = () => {
       this.book = this.world.chooseBook(this.octopus.head.position, 3);
     }
