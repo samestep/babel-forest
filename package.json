@@ -4,7 +4,7 @@
   "description": "A Book Jam game.",
   "repository": "https://github.com/samestep/babel-forest.git",
   "author": "Sam Estep",
-  "license": "Unlicense",
+  "license": "MIT",
   "main": "app/main.ts",
   "scripts": {
     "pages": "brunch build --production",
