@@ -1,4 +1,5 @@
 import * as t from 'io-ts';
+import * as seedrandom from 'seedrandom';
 
 const Progress = t.keyof({
   sleeping: null,
@@ -24,6 +25,7 @@ const Progress = t.keyof({
 export type Progress = t.TypeOf<typeof Progress>;
 
 const Save = t.interface({
+  seed: t.number,
   progress: Progress,
   location: t.tuple([t.number, t.number]),
 });
@@ -31,6 +33,7 @@ const Save = t.interface({
 type Save = t.TypeOf<typeof Save>;
 
 const defaultSave: Save = {
+  seed: seedrandom().int32(),
   progress: 'sleeping',
   location: [0, 0],
 };

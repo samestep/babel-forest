@@ -37,6 +37,7 @@ export class MainScene extends Phaser.Scene {
     this.graphics = this.add.graphics();
 
     this.world = new World({
+      seed: this.registry.values.save.seed,
       book: 50,
       door: 2,
       gap: 50,

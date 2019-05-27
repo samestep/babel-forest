@@ -12,6 +12,7 @@ import { JSONMap } from './map';
 import * as random from './random';
 
 interface WorldConfig {
+  seed: number;
   book: number; // the height of the gap between bookshelves
   door: number; // the height of doors (expressed as number of bookshelves)
   gap: number; // the gap between the two poles of a ladder
@@ -73,7 +74,7 @@ export class World {
   }
 
   query(col: number, row: number): { trap: boolean; door: boolean } {
-    const rng = seedrandom(JSON.stringify([col, row]));
+    const rng = seedrandom(JSON.stringify([this.config.seed, col, row]));
     let n = rng.int32();
     const trap = (n & 1) > 0;
     n = n >> 1;
@@ -152,14 +153,14 @@ export class World {
             this.config.wall, y - this.config.book,
             shelfWidth(this.config), this.config.book,
           ),
-          JSON.stringify([col, row, i, 'left']),
+          JSON.stringify([this.config.seed, col, row, i, 'left']),
         ]);
         shelves.push([
           new Phaser.Geom.Rectangle(
             this.config.wall + this.config.width - shelfWidth(this.config), y - this.config.book,
             shelfWidth(this.config), this.config.book,
           ),
-          JSON.stringify([col, row, i, 'right']),
+          JSON.stringify([this.config.seed, col, row, i, 'right']),
         ]);
       } else {
         shelves.push([
@@ -167,7 +168,7 @@ export class World {
             this.config.wall, y - this.config.book,
             this.config.width, this.config.book,
           ),
-          JSON.stringify([col, row, i]),
+          JSON.stringify([this.config.seed, col, row, i]),
         ]);
       }
     }
