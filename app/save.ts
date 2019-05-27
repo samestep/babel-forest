@@ -39,7 +39,6 @@ const defaultSave: Save = {
 };
 
 export function loadGame(): Save {
-  return defaultSave;
   const str = localStorage.getItem('babel-forest');
   try {
     const parsed = JSON.parse(str);
