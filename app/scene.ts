@@ -99,6 +99,14 @@ export class MainScene extends Phaser.Scene {
         this.time.addEvent({ delay: 250, callback: () => {
           this.events.emit('main-book2');
         } });
+      } else if (progress === 'book3') {
+        this.time.addEvent({ delay: 250, callback: () => {
+          this.events.emit('main-book3');
+        } });
+      } else if (progress === 'book4') {
+        this.time.addEvent({ delay: 250, callback: () => {
+          this.events.emit('main-book4');
+        } });
       } else if (progress === 'close') {
         this.time.addEvent({ delay: 250, callback: () => {
           this.events.emit('main-close');
@@ -145,6 +153,30 @@ export class MainScene extends Phaser.Scene {
     this.scene.get('hud').events.on('hud-getting2', getting2F);
     if (progress === 'getting2') {
       getting2F();
+    }
+
+    this.scene.get('hud').events.on('hud-book3', () => {
+      this.events.emit('main-book3');
+    });
+
+    const getting3F = () => {
+      this.book = this.world.chooseBook(this.octopus.head.position, 10);
+    }
+    this.scene.get('hud').events.on('hud-getting3', getting3F);
+    if (progress === 'getting3') {
+      getting3F();
+    }
+
+    this.scene.get('hud').events.on('hud-book4', () => {
+      this.events.emit('main-book4');
+    });
+
+    const getting4F = () => {
+      this.book = this.world.chooseBook(this.octopus.head.position, 25);
+    }
+    this.scene.get('hud').events.on('hud-getting4', getting4F);
+    if (progress === 'getting4') {
+      getting4F();
     }
 
     this.scene.get('hud').events.on('hud-close', () => {
@@ -238,10 +270,15 @@ export class MainScene extends Phaser.Scene {
       if (progress === 'getting1') {
         this.registry.values.save.progress = 'found1';
         this.events.emit('main-found1');
-      }
-      if (progress === 'getting2') {
+      } else if (progress === 'getting2') {
         this.registry.values.save.progress = 'found2';
         this.events.emit('main-found2');
+      } else if (progress === 'getting3') {
+        this.registry.values.save.progress = 'found3';
+        this.events.emit('main-found3');
+      } else if (progress === 'getting4') {
+        this.registry.values.save.progress = 'found4';
+        this.events.emit('main-found4');
       }
     }
 

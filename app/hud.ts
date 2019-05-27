@@ -36,10 +36,14 @@ export class HUD extends Phaser.Scene {
     this.sequence(story.move, 'move', 'waiting');
     this.coloredSequence(story.book1, 'book1', 'getting1');
     this.coloredSequence(story.book2, 'book2', 'getting2');
+    this.coloredSequence(story.book3, 'book3', 'getting3');
+    this.coloredSequence(story.book4, 'book4', 'getting4');
     this.coloredSequence(story.close, 'close', 'end');
 
     this.showBook(story.books[0], 'found1', 'book2');
-    this.showBook(story.books[1], 'found2', 'close');
+    this.showBook(story.books[1], 'found2', 'book3');
+    this.showBook(story.books[2], 'found3', 'book4');
+    this.showBook(story.books[3], 'found4', 'close');
 
     const leftKey = this.input.keyboard.addKey('LEFT');
     const rightKey = this.input.keyboard.addKey('RIGHT');
