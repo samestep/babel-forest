@@ -58,7 +58,7 @@ export class HUD extends Phaser.Scene {
         opacity: 1,
         duration: 5000,
         onComplete: () => {
-          const credits = this.add.text(100, 100, story.credits.join('\n'), {
+          const credits = this.add.text(50, 50, story.credits.join('\n'), {
             fontFamily: 'sans-serif',
             fontSize: '25px',
           });

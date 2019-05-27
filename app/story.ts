@@ -291,4 +291,8 @@ export const credits = [
   'code - Sam Estep',
   'art - Sam Estep',
   'story - Sam Estep',
+  '',
+  'special thanks:',
+  'ESLint, GitHub, Phaser,',
+  'Travis CI, TypeScript, Yarn',
 ];
