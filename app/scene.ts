@@ -20,6 +20,7 @@ export class MainScene extends Phaser.Scene {
   waiting: boolean;
   book: Phaser.Geom.Rectangle;
   oscillate: number;
+  radius: number;
 
   create() {
     this.wDown = false;
@@ -150,6 +151,19 @@ export class MainScene extends Phaser.Scene {
       this.events.emit('main-close');
     });
 
+    this.radius = 0;
+    this.scene.get('hud').events.on('hud-end', () => {
+      // @ts-ignore: Type 'MatterJS.World' is not assignable to type ...
+      const world: Matter.World = this.matter.world.localWorld;
+      world.gravity.y = 0;
+      this.matter.world.remove(this.world.comp, true);
+      this.tweens.add({
+        targets: this,
+        radius: 1000,
+        duration: 5000,
+      })
+    });
+
     const spacebar = this.input.keyboard.addKey('SPACE');
     spacebar.on('down', () => { this.jump = true; });
 
@@ -254,6 +268,12 @@ export class MainScene extends Phaser.Scene {
       this.graphics.fillStyle(0xffffff, Math.abs(1 - this.oscillate));
       this.graphics.fillRectShape(this.book);
     }
+    this.graphics.fillStyle(0x0000ff);
+    this.graphics.fillCircle(
+      this.octopus.head.position.x,
+      this.octopus.head.position.y,
+      this.radius,
+    );
     this.octopus.render(this.graphics, progress);
     if (this.book) {
       const bookVec = { x: this.book.centerX, y: this.book.centerY };

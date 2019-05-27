@@ -46,7 +46,7 @@ export class HUD extends Phaser.Scene {
       this.tweens.add({
         targets: this,
         opacity: 1,
-        duration: 1000,
+        duration: 5000,
         onComplete: () => {
           const credits = this.add.text(100, 100, story.credits.join('\n'), {
             fontFamily: 'sans-serif',
