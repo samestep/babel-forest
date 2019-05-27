@@ -30,7 +30,7 @@ const Save = t.interface({
   location: t.tuple([t.number, t.number]),
 });
 
-type Save = t.TypeOf<typeof Save>;
+export type Save = t.TypeOf<typeof Save>;
 
 const defaultSave: Save = {
   seed: seedrandom().int32(),
@@ -39,6 +39,7 @@ const defaultSave: Save = {
 };
 
 export function loadGame(): Save {
+  return defaultSave;
   const str = localStorage.getItem('babel-forest');
   try {
     const parsed = JSON.parse(str);

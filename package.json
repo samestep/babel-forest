@@ -45,6 +45,7 @@
     "io-ts": "^1.8.6",
     "phaser": "^3.17.0",
     "seedrandom": "^3.0.1",
+    "tone": "^13.4.9",
     "underscore": "^1.9.1"
   },
   "eslintConfig": {
