@@ -58,8 +58,12 @@ export const close: [string, string][] = [
 
 export const books = [
   [
-    'Welcome to the first book!',
-    'Hit escape to progress.',
+    'Find enclosed a recipe for 3 (three) chocolate chip cookies. At *least*. Some people tell me this recipe yields two (2) or fewer cookies, but those people are absolute goobers if you ask me. These cookies should provide a nice ESCAPE (cough cough hint hint) from your otherwise boring existence.',
+    'You will need: a) a a a a a a a sorry hold on one second',
+    "My cat jumped on the keyboard and I can't find the backspace key. Anyway, you probably need some eggs and stuff, what, do I look like a chef to you? And some chocolate chips. Duh.",
+    "Mix them together and you'll have a nice warm batch of chocolate chip cookie dough, except it's not warm yet because you probably forgot to bake it. Do I have to tell you everything? Honestly! It's like typing on a wall.",
+    "Oh, and don't plagiarize my recipe. Lots of hours of R&D went into this. Lots.",
+    "kthxbai",
   ],
   [
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam feugiat libero velit, eu aliquam diam maximus vel. Donec ac lorem quis sem pulvinar vulputate vel nec turpis. Proin ullamcorper turpis eu nisi malesuada, id egestas nulla interdum. Proin aliquam eleifend odio, ac consectetur metus placerat at. Etiam id vulputate justo. Maecenas bibendum metus ac arcu interdum condimentum. Sed a venenatis nisl. Praesent eu rutrum felis. Aenean porta ante volutpat ultricies auctor. Proin placerat gravida ex sit amet auctor. Nulla id pharetra sem, venenatis mattis ligula. Nulla quis velit non neque placerat imperdiet ac in odio.',
