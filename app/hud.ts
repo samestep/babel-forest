@@ -13,6 +13,8 @@ export class HUD extends Phaser.Scene {
   queue: [string, string][];
   page: Page;
   justClicked: boolean;
+  justLeft: boolean;
+  justRight: boolean;
   opacity: number;
 
   create() {
@@ -39,7 +41,11 @@ export class HUD extends Phaser.Scene {
     this.showBook(story.books[0], 'found1', 'book2');
     this.showBook(story.books[1], 'found2', 'close');
 
+    const leftKey = this.input.keyboard.addKey('LEFT');
+    const rightKey = this.input.keyboard.addKey('RIGHT');
     this.input.on('pointerdown', () => { this.justClicked = true; });
+    leftKey.on('down', () => { this.justLeft = true; });
+    rightKey.on('down', () => { this.justRight = true; });
 
     this.opacity = 0;
     this.events.on('hud-end', () => {
@@ -78,6 +84,18 @@ export class HUD extends Phaser.Scene {
         if (this.page.rightArrow) {
           this.page.pageNum++;
         }
+      }
+    }
+    if (this.justLeft) {
+      this.justLeft = false;
+      if (this.page.leftArrow) {
+        this.page.pageNum--;
+      }
+    }
+    if (this.justRight) {
+      this.justRight = false;
+      if (this.page.rightArrow) {
+        this.page.pageNum++;
       }
     }
 
