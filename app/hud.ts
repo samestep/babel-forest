@@ -78,24 +78,24 @@ export class HUD extends Phaser.Scene {
       this.justClicked = false;
       if (this.input.activePointer.x < this.cameras.main.worldView.centerX) {
         if (this.page.leftArrow) {
-          this.page.pageNum--;
+          this.page.pageNum -= 2;
         }
       } else {
         if (this.page.rightArrow) {
-          this.page.pageNum++;
+          this.page.pageNum += 2;
         }
       }
     }
     if (this.justLeft) {
       this.justLeft = false;
       if (this.page.leftArrow) {
-        this.page.pageNum--;
+        this.page.pageNum -= 2;
       }
     }
     if (this.justRight) {
       this.justRight = false;
       if (this.page.rightArrow) {
-        this.page.pageNum++;
+        this.page.pageNum += 2;
       }
     }
 
