@@ -2,7 +2,7 @@
   "name": "babel-forest",
   "version": "1.0.0",
   "description": "A Book Jam game.",
-  "repository": "https://github.com/samestep/babel-forest.git",
+  "repository": "https://github.com/gameless/babel-forest.git",
   "author": "Sam Estep",
   "license": "MIT",
   "main": "app/main.ts",
